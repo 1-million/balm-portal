@@ -1,16 +1,21 @@
 <script setup>
 import {computed, ref} from "vue";
-  import moment from "moment";
-  let dateTime = ref(new Date());
-  let curDateTime = computed(()=> moment(dateTime).format("YYYY-MM-DD HH:mm:ss"));
+  const count = ref({});
+  let curDateTime = computed(()=>{
+    debugger;
+    return count;
+  });
   function start(){
     console.log("test");
-    dateTime.value = new Date();
+    debugger;
+    setInterval(()=>{count.value = new Date()},500)
+
   }
 </script>
 
 <template>
   <div>
+    <div>{{ curDateTime }}</div>
     <div>{{ curDateTime }}</div>
     <button @click="start">开始</button>
     <button>停止</button>
