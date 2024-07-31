@@ -1,18 +1,17 @@
 <script setup>
-  import {ref} from "vue";
+import {computed, ref} from "vue";
   import moment from "moment";
-  let timer = ref(new Date());
+  let dateTime = ref(new Date());
+  let curDateTime = computed(()=> moment(dateTime).format("YYYY-MM-DD HH:mm:ss"));
   function start(){
     console.log("test");
-    let mon = moment.locale();
-    console.log(mon);
-    timer = new Date();
+    dateTime.value = new Date();
   }
 </script>
 
 <template>
   <div>
-    <div>{{ timer }}</div>
+    <div>{{ curDateTime }}</div>
     <button @click="start">开始</button>
     <button>停止</button>
   </div>
