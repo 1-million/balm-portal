@@ -1,15 +1,16 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+<!--  <img alt="Vue logo" src="./assets/logo.png">-->
+<!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
+  <MainList/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MainList from "@/components/MainList.vue";
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    MainList
   }
 }
 </script>
