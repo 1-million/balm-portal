@@ -1,9 +1,11 @@
 <script setup>
   import {ref} from "vue";
-
+  import moment from "moment";
   let timer = ref(new Date());
   function start(){
     console.log("test");
+    let mon = moment.locale();
+    console.log(mon);
     timer = new Date();
   }
 </script>
