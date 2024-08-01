@@ -35,15 +35,20 @@ function end(){
 
 <template>
   <div>
-    <div>{{ times }}</div>
-    <button :disabled="!(status === 0 || status === 2)" @click="start">开始</button>
-    <button :disabled="!(status === 1 || status === 2)" @click="stop">暂停</button>
-    <button :disabled="!(status !== 0)" @click="end">停止</button>
+    <lay-tag>{{ times }}</lay-tag>
+    <lay-button-group>
+      <lay-button :disabled="!(status === 0 || status === 2)" @click="start" type="primary">开始</lay-button>
+      <lay-button :disabled="!(status === 1 || status === 2)" @click="stop" type="warm">暂停</lay-button>
+      <lay-button :disabled="!(status !== 0)" @click="end" type="danger">停止</lay-button>
+    </lay-button-group>
   </div>
 </template>
 
 <style scoped>
 div {
   display: block;
+}
+.layui-tag .layui-tag-text{
+  font-size: 99px;
 }
 </style>

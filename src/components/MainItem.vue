@@ -1,11 +1,11 @@
 <script setup>
 
+import MainTimer from "@/components/MainTimer.vue";
 </script>
 
 <template>
  <div>
-   <h3>测试1</h3>
-   <button>开始</button>
+   <MainTimer/>
  </div>
 </template>
 

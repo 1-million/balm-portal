@@ -1,14 +1,17 @@
 <template>
-  <template v-for="item in 10" :key="item">
-    <MainItem/>
-  </template>
-  <MainTimer/>
+    <lay-collapse v-model="openKeys">
+      <lay-collapse-item v-for="item in list" :key="item" :title="item.title" :id="item">
+        <MainItem/>
+      </lay-collapse-item>
+    </lay-collapse>
 </template>
 <script setup>
 import { ref } from 'vue';
 import MainItem from "@/components/MainItem.vue";
-import MainTimer from "@/components/MainTimer.vue";
+
 const msg = ref("1");
+const list = ref([{"title":"测试1"},{"title":"测试2"}]);
+const openKeys = ref(0);
 console.log(msg);
 </script>
 
