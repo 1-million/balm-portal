@@ -1,6 +1,6 @@
 <script setup>
 
-import MainTimer from "@/components/MainTimer.vue";
+import MainTimer from "@/components/focus/MainTimer.vue";
 </script>
 
 <template>

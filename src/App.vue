@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import MainList from "@/components/MainList.vue";
+import MainList from "@/components/focus/MainList.vue";
 
 export default {
   name: 'App',
