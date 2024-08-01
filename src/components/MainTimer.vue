@@ -1,22 +1,22 @@
 <script setup>
 import {computed, ref} from "vue";
-  const count = ref({});
-  let curDateTime = computed(()=>{
-    debugger;
-    return count;
-  });
+import moment from "moment";
+  const baseDateTime = ref(moment(new Date()));
+  const curDateTime = ref(moment(new Date()));
+  const calcDateDiff = computed(()=>curDateTime.value.diff(baseDateTime.value, 'seconds'));
   function start(){
     console.log("test");
     debugger;
-    setInterval(()=>{count.value = new Date()},500)
+    setInterval(() => {
+      baseDateTime.value = moment(new Date()); // 每次都创建一个新的字符串
+    }, 1000);
 
   }
 </script>
 
 <template>
   <div>
-    <div>{{ curDateTime }}</div>
-    <div>{{ curDateTime }}</div>
+    <div>{{ calcDateDiff }}</div>
     <button @click="start">开始</button>
     <button>停止</button>
   </div>
