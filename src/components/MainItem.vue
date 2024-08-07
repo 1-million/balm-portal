@@ -1,11 +1,10 @@
 <script setup>
-
 import MainTimer from "@/components/MainTimer.vue";
 </script>
 
 <template>
  <div>
-   <MainTimer/>
+   <MainTimer is-show="true"/>
  </div>
 </template>
 
