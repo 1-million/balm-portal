@@ -9,15 +9,23 @@ import moment from "moment";
  *
  * @type {Ref<UnwrapRef<moment.Moment>>}
  */
-const isShow = ref(false);
-defineProps(['isShow'])
+const props = defineProps({
+  curItem:{
+    default:null
+  }
+})
+const curItem = ref(props.curItem)
 const summaryTimes = ref(0);
 const intervalId = ref(0);
 const status = ref(0);
+const percent = ref(100);
 // 计算经过秒数
 const times = computed(() => {
   return moment.utc(summaryTimes.value).format('HH:mm:ss');});
 
+const title = computed(()=>{
+  return curItem.value?curItem.value:'';
+})
 function start(){
   status.value = 1;
   intervalId.value = setInterval(() => {
@@ -33,22 +41,26 @@ function end(){
   clearInterval(intervalId.value);
   summaryTimes.value = 0;
 }
-
-function close(){
-  isShow.value = !isShow.value;
-}
+//
+// function close(){
+//   isShow.value = !isShow.value;
+// }
+setInterval(()=>{
+  percent.value -= 1;
+},100)
 </script>
 
 <template>
-  <div  v-if="isShow" class="timer">
-    <lay-card title="标题">
+  <div   class="timer">
+    <lay-card :title="title">
       <template v-slot:title>
-        <span class="reback">退回</span>
+<!--        <span class="reback">退回</span>-->
       </template>
       <template v-slot:extra>
-        <span class="close" @click="close">关闭</span>
+<!--        <span class="close" @click="close">关闭</span>-->
       </template>
-      <lay-tag>{{ times }}</lay-tag>
+      <lay-progress :percent="percent" circle show-text theme="blue" :text="times" :circleSize="200" :circleWidth="10">
+      </lay-progress>
       <lay-button-group>
         <lay-button :disabled="!(status === 0 || status === 2)" @click="start" type="primary">开始</lay-button>
         <lay-button :disabled="!(status === 1 || status === 2)" @click="stop" type="warm">暂停</lay-button>
