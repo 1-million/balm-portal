@@ -27,14 +27,14 @@ const summaryMinute = computed(()=>{
   return 0;
 })
 
-function start(){
+function join(){
   debugger;
   emit("start",item);
 }
 </script>
 
 <template>
-  <lay-panel  shadow="hover" style="padding: 10px" @click="start">
+  <lay-panel  shadow="hover" style="padding: 10px" @click="join">
     <lay-row space="10">
       <lay-col xs="4" sm="4" md="4">
         <img width="100%" height="100%" src="../../assets/logo.png"/>

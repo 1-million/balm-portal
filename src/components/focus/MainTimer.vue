@@ -19,17 +19,20 @@ const summaryTimes = ref(0);
 const intervalId = ref(0);
 const status = ref(0);
 const percent = ref(100);
+debugger;
+const afterMoment = moment().add(curItem.value.duration, 's');
+const now = ref({'time':moment()});
 // 计算经过秒数
 const times = computed(() => {
-  return moment.utc(summaryTimes.value).format('HH:mm:ss');});
+  return afterMoment.subtract(now.value.time).format('HH:mm:ss');});
 
 const title = computed(()=>{
-  return curItem.value?curItem.value:'';
+  return curItem.value?curItem.value.title:'';
 })
 function start(){
   status.value = 1;
   intervalId.value = setInterval(() => {
-    summaryTimes.value+=1000;
+    now.value.time = moment();
   }, 1000);
 }
 function stop(){
@@ -51,7 +54,7 @@ setInterval(()=>{
 </script>
 
 <template>
-  <div   class="timer">
+  <div class="timer">
     <lay-card :title="title">
       <template v-slot:title>
 <!--        <span class="reback">退回</span>-->
