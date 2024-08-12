@@ -8,7 +8,6 @@ const props = defineProps({
   }
 })
 const item = ref(props.item);
-const emit = defineEmits(["start"]);
 /**
  * 计时类型计算
  * @type {ComputedRef<string>}
@@ -22,19 +21,15 @@ const typeName = computed(()=>{
  */
 const summaryMinute = computed(()=>{
   if(item.value.summary){
-    return item.value.summary /60;
+    return Number(item.value.summary /60).toFixed(0);
   }
   return 0;
 })
 
-function join(){
-  debugger;
-  emit("start",item);
-}
 </script>
 
 <template>
-  <lay-panel  shadow="hover" style="padding: 10px" @click="join">
+  <lay-panel  shadow="hover" style="padding: 10px;">
     <lay-row space="10">
       <lay-col xs="4" sm="4" md="4">
         <img width="100%" height="100%" src="../../assets/logo.png"/>
@@ -63,4 +58,5 @@ div{
   h3,button{
     display: inline-block;
   }
+
 </style>

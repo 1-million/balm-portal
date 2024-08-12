@@ -1,6 +1,6 @@
 <template>
-  <MainItem v-for="item in list" :key="item" :item="item" @click="start(item)"></MainItem>
-  <MainTimer v-if="curItem!==null" :cur-item="curItem"></MainTimer>
+  <MainItem v-for="item in list" :key="item" :item="item" @click="start(item)" ></MainItem>
+  <MainTimer v-if="isShow" :cur-item="curItem" @close="close"></MainTimer>
 </template>
 <script setup>
 import {ref} from 'vue';
@@ -9,6 +9,7 @@ import MainTimer from "@/components/focus/MainTimer.vue";
 
 const msg = ref("1");
 const curItem = ref(null);
+const isShow = ref(false);
 const list = ref([{
   "title": "测试1",
   "type": 1,
@@ -19,6 +20,11 @@ console.log(msg);
 function start(item){
   debugger;
   curItem.value = item;
+  isShow.value = true;
+}
+
+function close(){
+  isShow.value = false;
 }
 </script>
 
