@@ -2,17 +2,17 @@
 <!--  <img alt="Vue logo" src="./assets/logo.png">-->
 <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
   <lay-container fluid>
-    <MainList/>
+    <AppMain/>
   </lay-container>
 </template>
 
 <script>
-import MainList from "@/components/focus/MainList.vue";
+import AppMain from "@/components/focus/AppMain.vue";
 
 export default {
   name: 'App',
   components: {
-    MainList
+    AppMain,
   }
 }
 </script>
@@ -24,7 +24,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 15px;
 }
 body{
   background-color: #539eeb
