@@ -131,7 +131,9 @@ div {
   height: 100%;
   background-color: rgb(255 255 255);
   z-index: 999999999;
+  /*
   background-image: url('../../assets/bg.jpeg');
+  */
 }
 .layui-card{
   background-color:transparent;
