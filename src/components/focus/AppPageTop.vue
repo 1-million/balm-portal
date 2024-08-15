@@ -14,5 +14,6 @@ const pageBack = ()=>{
 .layui-panel{
   padding:10px;
   margin-top: 10px;
+  margin-bottom: 5px;
 }
 </style>
