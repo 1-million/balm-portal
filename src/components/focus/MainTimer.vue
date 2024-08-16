@@ -4,8 +4,10 @@ import moment from "moment";
 
 /**
  * 计时组件
- * 通过时间间隔计算，获取时间差秒数。
- * 当前时间 - 基础时间 = 经过秒数
+ * 正向计时
+ * 累积时间 = 过去时间 - 当前时间
+ * 倒计时
+ * 剩余时间 = 未来时间 - 当前时间
  *
  * @type {Ref<UnwrapRef<moment.Moment>>}
  */
