@@ -32,7 +32,7 @@ const summaryMinute = computed(()=>{
   <lay-panel  shadow="hover" style="padding: 10px;">
     <lay-row space="10">
       <lay-col xs="4" sm="4" md="4">
-        <img width="100%" height="100%" src="../../assets/logo.png"/>
+        <img width="100%" height="100%" src="../assets/logo.png"/>
       </lay-col>
       <lay-col xs="20" sm="20" md="20">
         <lay-row style="margin-bottom: 5px">

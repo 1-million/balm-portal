@@ -24,5 +24,5 @@ nav a.router-link-exact-active {
 }
 </style>
 <script setup>
-import AppContext from "@/components/focus/AppContext.vue";
+import AppContext from "@/views/AppContext.vue";
 </script>

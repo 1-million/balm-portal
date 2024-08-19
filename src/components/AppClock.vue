@@ -2,6 +2,7 @@
 import * as jsJoda from "@js-joda/core";
 import {computed, ref} from "vue";
 import {ChronoUnit, DateTimeFormatter} from "@js-joda/core";
+import {layer} from "@layui/layui-vue";
 /**
  * 计时组件
  * 正向计时
@@ -23,7 +24,7 @@ const formatter = DateTimeFormatter.ofPattern('HH:mm:ss');
 const clockId = ref(0);
 
 // 时钟类型
-const type = ref(1);
+const type = ref(0);
 
 // 时钟状态 0 未开始，1，正常，2，暂停
 const status = ref(0);
@@ -75,7 +76,20 @@ const pause = ()=>{
   status.value = 2;
 };
 const stop = ()=>{
-  clearInterval(clockId.value);
+  layer.confirm("是否结算!!!",
+      {
+        title:"提示",
+        btn: [
+          {text:'结算', callback: (id) => {
+              clearInterval(clockId.value);
+              layer.close(id); }
+          },
+          {text:'取消', callback: (id) => {
+              layer.close(id); }
+          }
+        ]
+      }
+  );
 };
 </script>
 
@@ -84,9 +98,9 @@ const stop = ()=>{
     {{format}}
   </lay-panel>
   <lay-button-group>
-    <lay-button @click="start" type="primary">开始</lay-button>
-    <lay-button @click="pause" type="warm">暂停</lay-button>
-    <lay-button @click="stop" type="danger">停止</lay-button>
+    <lay-button :disabled="!(status === 0 || status === 2)" @click="start" type="primary">开始</lay-button>
+    <lay-button :disabled="!(status === 1)" @click="pause" type="warm">暂停</lay-button>
+    <lay-button :disabled="status === 0" @click="stop" type="danger">停止</lay-button>
   </lay-button-group>
 </template>
 

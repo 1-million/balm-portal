@@ -1,7 +1,7 @@
 <script setup>
 
-import AppMenu from "@/components/focus/AppMenu.vue";
-import AppPageTop from "@/components/focus/AppPageTop.vue";
+import AppMenu from "@/components/AppMenu.vue";
+import AppPageTop from "@/components/AppPageTop.vue";
 </script>
 
 <template>
