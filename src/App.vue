@@ -2,18 +2,18 @@
 <!--  <img alt="Vue logo" src="./assets/logo.png">-->
 <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
   <lay-container fluid>
-    <MainList/>
+<!--    <MainList/>-->
+    <FocusMain/>
   </lay-container>
 </template>
 
 <script>
-import MainList from "@/components/focus/MainList.vue";
+
+import FocusMain from "@/components/focus2/FocusMain.vue";
 
 export default {
   name: 'App',
-  components: {
-    MainList
-  }
+  components: {FocusMain},
 }
 </script>
 
@@ -27,7 +27,7 @@ export default {
   margin-top: 60px;
 }
 body{
-  background-color: #539eeb
+  background-color: azure
 
 }
 </style>
