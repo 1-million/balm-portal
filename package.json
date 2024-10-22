@@ -9,12 +9,15 @@
   },
   "dependencies": {
     "@layui/layui-vue": "^2.17.7",
+    "axios": "^0.21.0",
     "core-js": "^3.8.3",
     "moment": "^2.30.1",
+    "qs": "^6.9.4",
     "vue": "^3.2.13",
     "vue-moment": "^4.1.0"
   },
   "devDependencies": {
+    "@aiping/vue-cli-plugin-axios": "^1.0.0",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@vue/cli-plugin-babel": "~5.0.0",

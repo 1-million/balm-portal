@@ -1,5 +1,7 @@
 <script setup>
 import {reactive, ref} from "vue";
+import {layer} from "@layui/layui-vue";
+import FocusRecordApi from "@/api/focusRecord";
 
 const form = ref({});
 const loading = ref(false);
@@ -24,31 +26,23 @@ const dataSource = ref([
 ]);
 const selectedKeys = ref([]);
 const page = reactive({current: 1, limit: 10, total: 100});
+
+const submit = ()=>{
+  FocusRecordApi.add(form.value).then((res)=>{
+    layer.msg(res.message, { icon : 1})
+  }).catch((err)=>{
+    debugger;
+    layer.msg(err.message, { icon : 2})
+  })
+}
+const reset = ()=>{
+
+}
 </script>
 
 <template>
   <lay-row space="10">
-    <lay-col md="18">
-      <lay-card>
-        <lay-table
-            :page="page"
-            :resize="true"
-            :height="'100%'"
-            :columns="columns"
-            :loading="loading"
-            :default-toolbar="true"
-            :data-source="dataSource"
-            v-model:selected-keys="selectedKeys"
-            @change="change"
-            @sortChange="sortChange">
-          <template v-slot:operator>
-            <lay-button size="xs" type="primary">编辑</lay-button>
-            <lay-button size="xs">查看</lay-button>
-          </template>
-        </lay-table>
-      </lay-card>
-    </lay-col>
-    <lay-col md="6">
+    <lay-col md="24">
       <lay-card>
         <lay-form :model="form" pane>
           <lay-form-item label="类型" prop="form.type">
@@ -79,13 +73,34 @@ const page = reactive({current: 1, limit: 10, total: 100});
           </lay-form-item>
           <lay-form-item>
             <lay-button type="primary" @click="submit">提交</lay-button>
-            <lay-button type="default" @click="1">重置</lay-button>
+            <lay-button @click="reset">重置</lay-button>
           </lay-form-item>
         </lay-form>
       </lay-card>
     </lay-col>
   </lay-row>
-
+  <lay-row space="10">
+    <lay-col md="24">
+      <lay-card>
+        <lay-table
+            :page="page"
+            :resize="true"
+            :height="'100%'"
+            :columns="columns"
+            :loading="loading"
+            :default-toolbar="true"
+            :data-source="dataSource"
+            v-model:selected-keys="selectedKeys"
+            @change="change"
+            @sortChange="sortChange">
+          <template v-slot:operator>
+            <lay-button size="xs" type="primary">编辑</lay-button>
+            <lay-button size="xs">查看</lay-button>
+          </template>
+        </lay-table>
+      </lay-card>
+    </lay-col>
+  </lay-row>
 </template>
 
 <style scoped>
