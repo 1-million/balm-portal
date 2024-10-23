@@ -4,7 +4,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: ()=> import('@/components/focus2/FocusMain.vue')
+    component: ()=> import('@/components/focus2/FocusMain2.vue')
   },
   {
     path: '/test',
