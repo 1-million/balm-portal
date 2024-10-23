@@ -8,13 +8,17 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@js-joda/core": "^5.6.3",
     "@layui/layui-vue": "^2.17.7",
     "axios": "^0.21.0",
+    "axios-mock-adapter": "^2.1.0",
     "core-js": "^3.8.3",
     "moment": "^2.30.1",
     "qs": "^6.9.4",
     "vue": "^3.2.13",
-    "vue-moment": "^4.1.0"
+    "vue-axios": "^3.5.2",
+    "vue-moment": "^4.1.0",
+    "vue-router": "^4.4.5"
   },
   "devDependencies": {
     "@aiping/vue-cli-plugin-axios": "^1.0.0",
