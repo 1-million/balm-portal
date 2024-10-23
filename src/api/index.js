@@ -27,6 +27,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
 	config => {
 		// 在发送请求之前做些什么
+		console.log("请求拦截",config);
 		return config;
 	},
 	error => {
@@ -39,6 +40,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
 	response => {
 		// 对响应数据做点什么
+		console.log("响应拦截",response);
 		return response.data;
 	},
 	error => {

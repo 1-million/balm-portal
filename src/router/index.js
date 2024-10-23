@@ -1,16 +1,15 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import AppMain from "@/views/AppMain.vue";
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: AppMain
+    component: ()=> import('@/components/focus2/FocusMain.vue')
   },
   {
     path: '/test',
     name: 'test',
-    component: ()=> import('../components/AppClock.vue')
+    component: ()=> import('@/components/focus2/FocusMain.vue')
   }
 ]
 

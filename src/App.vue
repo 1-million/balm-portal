@@ -1,19 +1,18 @@
 <template>
 <!--  <img alt="Vue logo" src="./assets/logo.png">-->
 <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
-  <lay-container fluid>
 <!--    <MainList/>-->
-    <FocusMain/>
-  </lay-container>
+<!--    <FocusMain2/>-->
+  <router-view/>
 </template>
 
 <script>
 
-import FocusMain from "@/components/focus2/FocusMain.vue";
+// import FocusMain2 from "@/components/focus2/FocusMain2.vue";
 
 export default {
   name: 'App',
-  components: {FocusMain},
+  // components: {FocusMain2},
 }
 </script>
 
