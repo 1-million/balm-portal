@@ -3,5 +3,14 @@ module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
     devtool: 'source-map' // 或者 'cheap-source-map', 'eval-source-map' 等
-  }
+  },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8888', // 后端服务的地址
+        changeOrigin: true, // 是否改变源
+        pathRewrite: { '^/api': '/api' }, // 路径重写规则
+      },
+    },
+  },
 })

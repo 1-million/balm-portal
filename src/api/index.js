@@ -5,8 +5,8 @@ import qs from "qs";
 axios.defaults.headers["Content-Type"] = "application/json";
 
 const axiosInstance = axios.create({
-	baseURL: 'https://localhost:8888/api', // 替换为你的 API 基础 URL
-	timeout: 3000,
+	baseURL: '/api', // 替换为你的 API 基础 URL
+	timeout: 30000,
 	transformRequest: [
 		function(data, header) {
 		debugger;
@@ -32,6 +32,7 @@ axiosInstance.interceptors.request.use(
 	},
 	error => {
 		// 对请求错误做些什么
+		console.log("请求失败拦截",error);
 		return Promise.reject(error);
 	}
 );
@@ -45,6 +46,7 @@ axiosInstance.interceptors.response.use(
 	},
 	error => {
 		// 对响应错误做点什么
+		console.log("响应失败拦截",error);
 		return Promise.reject(error);
 	}
 );

@@ -1,6 +1,8 @@
 <script setup>
 import {ref} from "vue";
 import dayjs from "dayjs";
+import FocusRecordApi from "@/api/focusRecord";
+import {showNotify} from "vant";
 
 const form = ref({});
 
@@ -71,6 +73,35 @@ const dateTimeFormatter = (type, option) => {
   return option;
 };
 
+// list
+
+const queryParam = {
+  'current':1,
+  'size':20
+};
+const loading = ref(false);
+const finished = ref(false);
+const list = ref([]);
+
+const onLoad = ()=>{
+  console.log(queryParam);
+  FocusRecordApi.queryPage(queryParam).then((res)=>{
+    debugger;
+    list.value = res.data.records;
+    loading.value = false;
+    // 主要通知
+    showNotify({ type: 'primary', message: res.msg });
+    // 数据全部加载完成
+    if (list.value.length >= res.data.total) {
+      finished.value = true;
+    }
+  }).catch((err)=>{
+    // 危险通知
+    showNotify({ type: 'danger', message: err.message });
+  }).catch(()=>{
+    finished.value = true;
+  })
+}
 </script>
 
 <template>
@@ -130,6 +161,20 @@ const dateTimeFormatter = (type, option) => {
           </van-button>
         </div>
       </van-form>
+    </van-col>
+  </van-row>
+  <van-row>
+    <van-col span="24">
+      <van-list style="height: 400px"
+          v-model:loading="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="onLoad"
+      >
+        <van-cell v-for="item in list" :key="item" :title="item" >
+          <p>111</p>
+        </van-cell>
+      </van-list>
     </van-col>
   </van-row>
 </template>

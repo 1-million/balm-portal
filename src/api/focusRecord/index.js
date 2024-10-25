@@ -8,13 +8,13 @@ const del = (params) => Api.get(`${MODULE_URL}/del`, { params });
 
 const update = (params) => Api.post(`${MODULE_URL}/save`, { params });
 
-const get = (params) => Api.post(`${MODULE_URL}/list`, { params });
+const queryPage = (params) => Api.get(`${MODULE_URL}/queryPage`, { params });
 
 const FocusRecordApi= {
-  add, // 增加用户
-  del, // 删除用户
-  update, // 更新用户
-  get, // 获取用户
+  add, // 增加
+  del, // 删除
+  update, // 更新
+  queryPage, // 获取
 };
 
 export default FocusRecordApi;
