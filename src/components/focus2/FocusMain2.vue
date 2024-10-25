@@ -1,5 +1,6 @@
 <script setup>
-import {computed, ref} from "vue";
+import {ref} from "vue";
+import dayjs from "dayjs";
 
 const form = ref({});
 
@@ -46,7 +47,8 @@ const maxDate = new Date(2025, 5, 1);
 // 首先获取当前日期时间
 // 通过计算函数返回数组
 
-
+const test = dayjs();
+console.log(test.format('YYYY-MM-DD HH:mm:ss'));
 // const dateTimeFormater =  DateTimeFormatter.ofPattern('yyyy-MM-dd HH:mm:ss');
 const startDateTime = ref('2024-05-27 11:33:43');
 // const endDateTime = ref(['2023','01','21','11','12','36']);

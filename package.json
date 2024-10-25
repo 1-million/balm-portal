@@ -10,9 +10,10 @@
   "dependencies": {
     "@js-joda/core": "^5.6.3",
     "@layui/layui-vue": "^2.17.7",
-    "axios": "^0.21.0",
+    "axios": "1.7.4",
     "axios-mock-adapter": "^2.1.0",
     "core-js": "^3.8.3",
+    "dayjs": "^1.11.13",
     "moment": "^2.30.1",
     "qs": "^6.9.4",
     "vant": "^4.9.8",
