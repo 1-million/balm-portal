@@ -9,7 +9,6 @@ const axiosInstance = axios.create({
 	timeout: 30000,
 	transformRequest: [
 		function(data, header) {
-		debugger;
 			let ret = data;
 			if (header["Content-Type"] === "application/x-www-form-urlencoded") {
 				ret = qs.stringify(data);

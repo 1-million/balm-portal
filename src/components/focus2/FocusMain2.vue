@@ -31,16 +31,16 @@ const isShowTypePicker = ref(false);
 const isShowDateTimePicker = ref(false);
 
 const typeColumns = ref([
-  { text: '阅读', value: '1' },
-  { text: '学习', value: '2' },
-  { text: '编码', value: '3' },
-  { text: '运动', value: '4' },
+  {text: '阅读', value: '1'},
+  {text: '学习', value: '2'},
+  {text: '编码', value: '3'},
+  {text: '运动', value: '4'},
 ]);
 
 
-const setTypeConfirm = (data)=>{
+const setTypeConfirm = (data) => {
   console.log(data);
-  form.value.type =  data.selectedValues[0];
+  form.value.type = data.selectedValues[0];
   isShowTypePicker.value = false;
 };
 const minDate = new Date(2020, 0, 1);
@@ -55,7 +55,7 @@ console.log(test.format('YYYY-MM-DD HH:mm:ss'));
 const startDateTime = ref('2024-05-27 11:33:43');
 // const endDateTime = ref(['2023','01','21','11','12','36']);
 
-const dateTimeConfirm = (data)=>{
+const dateTimeConfirm = (data) => {
   console.log(data);
   isShowDateTimePicker.value = false;
 }
@@ -76,29 +76,40 @@ const dateTimeFormatter = (type, option) => {
 // list
 
 const queryParam = {
-  'current':1,
-  'size':20
+  'current': 1,
+  'size': 2
 };
 const loading = ref(false);
 const finished = ref(false);
+const refreshing = ref(false);
 const list = ref([]);
 
-const onLoad = ()=>{
-  console.log(queryParam);
-  FocusRecordApi.queryPage(queryParam).then((res)=>{
-    debugger;
-    list.value = res.data.records;
+const onRefresh = () => {
+  // 清空列表数据
+  finished.value = false;
+
+  // 重新加载数据
+  // 将 loading 设置为 true，表示处于加载状态
+  loading.value = true;
+  onLoad();
+};
+
+const onLoad = () => {
+  FocusRecordApi.queryPage(queryParam).then((res) => {
+    list.value = list.value.concat(res.data.records);
     loading.value = false;
     // 主要通知
-    showNotify({ type: 'primary', message: res.msg });
+    showNotify({type: 'primary', message: res.msg});
     // 数据全部加载完成
     if (list.value.length >= res.data.total) {
       finished.value = true;
+    }else{
+      queryParam.current += 1;
     }
-  }).catch((err)=>{
+  }).catch((err) => {
     // 危险通知
-    showNotify({ type: 'danger', message: err.message });
-  }).catch(()=>{
+    showNotify({type: 'danger', message: err.message});
+  }).catch(() => {
     finished.value = true;
   })
 }
@@ -146,7 +157,8 @@ const onLoad = ()=>{
                 :max-date="maxDate"
                 :formatter="dateTimeFormatter"
             />
-            <van-time-picker v-model="time" :columns-type="['hour', 'minute', 'second']" :formatter="dateTimeformatter" />
+            <van-time-picker v-model="time" :columns-type="['hour', 'minute', 'second']"
+                             :formatter="dateTimeformatter"/>
           </van-picker-group>
         </van-popup>
         <van-field
@@ -165,16 +177,18 @@ const onLoad = ()=>{
   </van-row>
   <van-row>
     <van-col span="24">
-      <van-list style="height: 400px"
-          v-model:loading="loading"
-          :finished="finished"
-          finished-text="没有更多了"
-          @load="onLoad"
-      >
-        <van-cell v-for="item in list" :key="item" :title="item" >
-          <p>111</p>
-        </van-cell>
-      </van-list>
+      <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+        <van-list
+            v-model:loading="loading"
+            :finished="finished"
+            finished-text="没有更多了"
+            @load="onLoad"
+        >
+          <van-cell v-for="item in list" :key="item" :title="item">
+            <p>{{item.id}}</p>
+          </van-cell>
+        </van-list>
+      </van-pull-refresh>
     </van-col>
   </van-row>
 </template>
