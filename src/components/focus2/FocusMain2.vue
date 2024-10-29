@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import dayjs from "dayjs";
 import ArraySupport from 'dayjs/plugin/arraySupport'
 import toArray from 'dayjs/plugin/toArray'
@@ -7,34 +7,6 @@ import FocusRecordApi from "@/api/focusRecord";
 import {showNotify} from "vant";
 dayjs.extend(ArraySupport);
 dayjs.extend(toArray);
-const form = ref({});
-const typeName = ref();
-const sceneName = ref();
-// const columns = ref([
-//   {title: "选项", width: "30px", type: "checkbox", fixed: "left"},
-//   {title: "类型", width: "80px", key: "type"},
-//   {title: "开始时间", width: "100px", key: "startDateTime",},
-//   {title: "结束时间", width: "180px", key: "endDateTime"},
-//   {title: "场景", width: "180px", key: "scene"},
-//   {title: "描述", width: "180px", key: "remark"},
-//   {title: "操作", width: "100px", customSlot: "operator", key: "operator", fixed: "right", ignoreExport: true}
-//
-// ]);
-// const dataSource = ref([
-//   {
-//     'type': "阅读999",
-//     'startDateTime': "2024-10-21 22:42",
-//     'endDateTime': "2024-10-21 23:42",
-//     'scene': "出租房",
-//     "remark": "编写专注记录软件。"
-//   }
-// ]);
-
-
-const isShowTypePicker = ref(false);
-const isShowScenePicker = ref(false);
-const isShowStartDateTimePicker = ref(false);
-const isShowEndDateTimePicker = ref(false);
 
 const typeColumns = ref([
   {text: '阅读', value: '1'},
@@ -48,6 +20,15 @@ const sceneColumns = ref([
   {text: '测试', value: '3'},
   {text: '其他', value: '4'},
 ]);
+
+const form = ref({});
+const typeName = ref(typeColumns.value[0].text);
+const sceneName = ref(sceneColumns.value[0].text);
+
+const isShowTypePicker = ref(false);
+const isShowScenePicker = ref(false);
+const isShowStartDateTimePicker = ref(false);
+const isShowEndDateTimePicker = ref(false);
 
 const setTypeConfirm = (data) => {
   console.log(data);
@@ -69,7 +50,7 @@ const date = ref(dataTime.slice(0,3));
 const time = ref(dataTime.slice(3,6));
 const minDate = new Date(2020, 0, 1);
 const maxDate = new Date(2025, 5, 1);
-
+form.value.startDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
 // 首先获取当前日期时间
 // 通过计算函数返回数组
 
@@ -96,6 +77,12 @@ const loading = ref(false);
 const finished = ref(false);
 const refreshing = ref(false);
 const list = ref([]);
+const btnNames = ['开始','结束'];
+const focusing= ref();
+
+onMounted(()=>{
+  getFocusing();
+});
 
 const onRefresh = () => {
   // 清空列表数据
@@ -106,6 +93,22 @@ const onRefresh = () => {
   loading.value = true;
   onLoad();
 };
+
+const getFocusing= ()=>{
+  FocusRecordApi.getFocusing().then((res) => {
+    if(res.data){
+      focusing.value = res.data;
+      form.value = focusing.value
+      typeName.value = focusing.value.type;
+      sceneName.value = focusing.value.scene;
+    }
+    // 主要通知
+    // showNotify({type: 'primary', message: res.msg});
+  }).catch((err) => {
+    // 危险通知
+    showNotify({type: 'danger', message: err.message});
+  })
+}
 
 const onLoad = () => {
   FocusRecordApi.queryPage(queryParam).then((res) => {
@@ -122,31 +125,50 @@ const onLoad = () => {
   }).catch((err) => {
     // 危险通知
     showNotify({type: 'danger', message: err.message});
-  }).catch(() => {
+  }).finally(() => {
     finished.value = true;
   })
 }
 
-const onSubmit = (values)=>{
+const onSubmit = (focusing, values)=>{
   debugger;
   console.info(values);
-  FocusRecordApi.add(values).then((res)=>{
-    debugger;
-    console.debug(res);
-    // 成功通知
-    showNotify({type: 'success', message: res.msg});
-  }).catch((err)=>{
-    console.error(err);
-    // 危险通知
-    showNotify({type: 'danger', message: err.message});
-  });
+  if(focusing){
+    values = focusing;
+    values.endDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    FocusRecordApi.setFinish(focusing).then((res)=>{
+      debugger;
+      console.debug(res);
+      // 成功通知
+      showNotify({type: 'success', message: res.msg});
+    }).catch((err)=>{
+      console.error(err);
+      // 危险通知
+      showNotify({type: 'danger', message: err.message});
+    });
+  }
+
+  if(!focusing) {
+    FocusRecordApi.add(values).then((res) => {
+      debugger;
+      console.debug(res);
+      // 成功通知
+      showNotify({type: 'success', message: res.msg});
+    }).catch((err) => {
+      console.error(err);
+      // 危险通知
+      showNotify({type: 'danger', message: err.message});
+    });
+  }
 };
 </script>
 
 <template>
   <van-row>
     <van-col span="24">
-      <van-form @submit="onSubmit">
+      <van-form @submit="(values)=>{
+        onSubmit(focusing,values)
+      }">
         <van-field
             v-model="typeName"
             is-link
@@ -234,8 +256,8 @@ const onSubmit = (values)=>{
             placeholder="请输入备注"
         />
         <div style="margin: 16px;">
-          <van-button round block type="primary" native-type="submit">
-            提交
+          <van-button round block :type="focusing?'warning':'primary'" native-type="submit">
+            {{ btnNames[focusing?1:0] }}
           </van-button>
         </div>
       </van-form>
