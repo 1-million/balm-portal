@@ -2,7 +2,7 @@ import Api from '@/api';
 
 const MODULE_URL = '/focus/record';
 
-const add = (params) => Api.post(`${MODULE_URL}/add`, { params });
+const add = (params) => Api.post(`${MODULE_URL}/add`, { ...params });
 
 const del = (params) => Api.get(`${MODULE_URL}/del`, { params });
 

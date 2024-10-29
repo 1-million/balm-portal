@@ -1,11 +1,15 @@
 <script setup>
 import {ref} from "vue";
 import dayjs from "dayjs";
+import ArraySupport from 'dayjs/plugin/arraySupport'
+import toArray from 'dayjs/plugin/toArray'
 import FocusRecordApi from "@/api/focusRecord";
 import {showNotify} from "vant";
-
+dayjs.extend(ArraySupport);
+dayjs.extend(toArray);
 const form = ref({});
-
+const typeName = ref();
+const sceneName = ref();
 // const columns = ref([
 //   {title: "选项", width: "30px", type: "checkbox", fixed: "left"},
 //   {title: "类型", width: "80px", key: "type"},
@@ -28,7 +32,9 @@ const form = ref({});
 
 
 const isShowTypePicker = ref(false);
-const isShowDateTimePicker = ref(false);
+const isShowScenePicker = ref(false);
+const isShowStartDateTimePicker = ref(false);
+const isShowEndDateTimePicker = ref(false);
 
 const typeColumns = ref([
   {text: '阅读', value: '1'},
@@ -36,42 +42,49 @@ const typeColumns = ref([
   {text: '编码', value: '3'},
   {text: '运动', value: '4'},
 ]);
-
+const sceneColumns = ref([
+  {text: '家', value: '1'},
+  {text: '公司', value: '2'},
+  {text: '测试', value: '3'},
+  {text: '其他', value: '4'},
+]);
 
 const setTypeConfirm = (data) => {
   console.log(data);
   form.value.type = data.selectedValues[0];
+  typeName.value = data.selectedOptions[0].text;
   isShowTypePicker.value = false;
 };
+
+const setSceneConfirm = (data) => {
+  console.log(data);
+  form.value.scene = data.selectedValues[0];
+  sceneName.value = data.selectedOptions[0].text;
+  isShowScenePicker.value = false;
+};
+
+const dataTime = dayjs().toArray();
+
+const date = ref(dataTime.slice(0,3));
+const time = ref(dataTime.slice(3,6));
 const minDate = new Date(2020, 0, 1);
 const maxDate = new Date(2025, 5, 1);
 
 // 首先获取当前日期时间
 // 通过计算函数返回数组
 
-const test = dayjs();
-console.log(test.format('YYYY-MM-DD HH:mm:ss'));
-// const dateTimeFormater =  DateTimeFormatter.ofPattern('yyyy-MM-dd HH:mm:ss');
-const startDateTime = ref('2024-05-27 11:33:43');
-// const endDateTime = ref(['2023','01','21','11','12','36']);
-
-const dateTimeConfirm = (data) => {
-  console.log(data);
-  isShowDateTimePicker.value = false;
+const dateTimeConfirm = (type,data) => {
+  console.info(data);
+  const dateTime = dayjs([...data[0].selectedValues,...data[1].selectedValues]);
+  if(type==='date'){
+    form.value.startDateTime = dateTime.format('YYYY-MM-DD HH:mm:ss');
+    isShowStartDateTimePicker.value = false;
+  }
+  if(type==='time'){
+    form.value.endDateTime = dateTime.format('YYYY-MM-DD HH:mm:ss');
+    isShowEndDateTimePicker.value = false;
+  }
 }
-
-const dateTimeFormatter = (type, option) => {
-  if (type === 'hour') {
-    option.text += '时';
-  }
-  if (type === 'minute') {
-    option.text += '分';
-  }
-  if (type === 'second') {
-    option.text += '秒';
-  }
-  return option;
-};
 
 // list
 
@@ -113,6 +126,21 @@ const onLoad = () => {
     finished.value = true;
   })
 }
+
+const onSubmit = (values)=>{
+  debugger;
+  console.info(values);
+  FocusRecordApi.add(values).then((res)=>{
+    debugger;
+    console.debug(res);
+    // 成功通知
+    showNotify({type: 'success', message: res.msg});
+  }).catch((err)=>{
+    console.error(err);
+    // 危险通知
+    showNotify({type: 'danger', message: err.message});
+  });
+};
 </script>
 
 <template>
@@ -120,10 +148,10 @@ const onLoad = () => {
     <van-col span="24">
       <van-form @submit="onSubmit">
         <van-field
-            v-model="form.type"
+            v-model="typeName"
             is-link
             readonly
-            name="picker"
+            name="type"
             label="类型"
             placeholder="点击选择类型"
             @click="isShowTypePicker = true"
@@ -136,34 +164,72 @@ const onLoad = () => {
           />
         </van-popup>
         <van-field
+            v-model="sceneName"
+            is-link
+            readonly
+            name="scene"
+            label="场景"
+            placeholder="点击选择场景"
+            @click="isShowScenePicker = true"
+        />
+        <van-popup v-model:show="isShowScenePicker" position="bottom">
+          <van-picker
+              :columns="sceneColumns"
+              @confirm="setSceneConfirm"
+              @cancel="isShowScenePicker = false"
+          />
+        </van-popup>
+        <van-field
             v-model="form.startDateTime"
             is-link
             readonly
-            name="datePicker"
+            name="startDateTime"
             label="时间选择"
             placeholder="点击选择时间"
-            @click="isShowDateTimePicker = true"
+            @click="isShowStartDateTimePicker = true"
         />
-        <van-popup v-model:show="isShowDateTimePicker" position="bottom">
+        <van-popup v-model:show="isShowStartDateTimePicker" position="bottom">
           <van-picker-group
               title="开始日期"
               :tabs="['选择日期', '选择时间']"
-              @confirm="dateTimeConfirm"
-              @cancel="isShowDateTimePicker = false"
+              @confirm="(data)=>{dateTimeConfirm('date',data)}"
+              @cancel="isShowStartDateTimePicker = false"
           >
             <van-date-picker
-                v-model="startDateTime"
+                v-model="date"
                 :min-date="minDate"
                 :max-date="maxDate"
-                :formatter="dateTimeFormatter"
             />
-            <van-time-picker v-model="time" :columns-type="['hour', 'minute', 'second']"
-                             :formatter="dateTimeformatter"/>
+            <van-time-picker v-model="time" :columns-type="['hour', 'minute', 'second']"/>
+          </van-picker-group>
+        </van-popup>
+        <van-field
+            v-model="form.endDateTime"
+            is-link
+            readonly
+            name="endDateTime"
+            label="时间选择"
+            placeholder="点击选择时间"
+            @click="isShowEndDateTimePicker = true"
+        />
+        <van-popup v-model:show="isShowEndDateTimePicker" position="bottom">
+          <van-picker-group
+              title="开始日期"
+              :tabs="['选择日期', '选择时间']"
+              @confirm="(data)=>{dateTimeConfirm('time',data)}"
+              @cancel="isShowEndDateTimePicker = false"
+          >
+            <van-date-picker
+                v-model="date"
+                :min-date="minDate"
+                :max-date="maxDate"
+            />
+            <van-time-picker v-model="time" :columns-type="['hour', 'minute', 'second']"/>
           </van-picker-group>
         </van-popup>
         <van-field
             v-model="form.remark"
-            name="datePicker"
+            name="remark"
             label="备注"
             placeholder="请输入备注"
         />
@@ -184,8 +250,26 @@ const onLoad = () => {
             finished-text="没有更多了"
             @load="onLoad"
         >
-          <van-cell v-for="item in list" :key="item" :title="item">
-            <p>{{item.id}}</p>
+          <van-cell v-for="item in list" :key="item">
+            <van-swipe-cell>
+              <van-cell
+                  class="list-card"
+              >
+                <template #title>
+                  <span>{{item.id}}-{{item.type}}</span>
+                </template>
+              <template #label>
+                <span style="display: none;">{{item.type}}</span>
+                <span>{{item.startDateTime}}</span>
+                <span>{{item.endDateTime}}</span>
+                <span>{{item.scene}}</span>
+                <span>{{item.remark}}</span>
+              </template>
+              </van-cell>
+              <template #right>
+                <van-button square text="Delete" type="danger" class="delete-button" />
+              </template>
+            </van-swipe-cell>
           </van-cell>
         </van-list>
       </van-pull-refresh>
@@ -194,5 +278,10 @@ const onLoad = () => {
 </template>
 
 <style scoped>
-
+.list-card ::v-deep(.van-cell__title),::v-deep(.van-cell__label){
+  text-align: left;
+}
+span{
+  display: block;
+}
 </style>
