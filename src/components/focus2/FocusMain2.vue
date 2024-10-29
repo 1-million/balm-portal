@@ -123,8 +123,6 @@ const onLoad = () => {
   }).catch((err) => {
     // 危险通知
     showNotify({type: 'danger', message: err.message});
-  }).finally(() => {
-    finished.value = true;
   })
 }
 
