@@ -135,8 +135,12 @@ const reload = ()=>{
 const onSubmit = (focusing, values)=>{
   console.info(values);
   if(focusing){
+    if(values.endDateTime){
+      focusing.endDateTime = values.endDateTime;
+    }else{
+      focusing.endDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    }
     values = focusing;
-    values.endDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
     FocusRecordApi.setFinish(focusing).then((res)=>{
       console.debug(res);
       // 成功通知
