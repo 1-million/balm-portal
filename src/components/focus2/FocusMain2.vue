@@ -15,10 +15,8 @@ const typeColumns = ref([
   {text: '运动', value: '4'},
 ]);
 const sceneColumns = ref([
-  {text: '家', value: '1'},
+  {text: '出租房', value: '1'},
   {text: '公司', value: '2'},
-  {text: '测试', value: '3'},
-  {text: '其他', value: '4'},
 ]);
 
 const form = ref({});
@@ -130,17 +128,22 @@ const onLoad = () => {
   })
 }
 
+const reload = ()=>{
+  setTimeout(()=>{
+    window.location.reload();
+  },500);
+};
+
 const onSubmit = (focusing, values)=>{
-  debugger;
   console.info(values);
   if(focusing){
     values = focusing;
     values.endDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
     FocusRecordApi.setFinish(focusing).then((res)=>{
-      debugger;
       console.debug(res);
       // 成功通知
       showNotify({type: 'success', message: res.msg});
+      reload();
     }).catch((err)=>{
       console.error(err);
       // 危险通知
@@ -150,10 +153,10 @@ const onSubmit = (focusing, values)=>{
 
   if(!focusing) {
     FocusRecordApi.add(values).then((res) => {
-      debugger;
       console.debug(res);
       // 成功通知
       showNotify({type: 'success', message: res.msg});
+      reload();
     }).catch((err) => {
       console.error(err);
       // 危险通知
