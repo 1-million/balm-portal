@@ -12,7 +12,8 @@ const typeColumns = ref([
   {text: '阅读', value: '1'},
   {text: '学习', value: '2'},
   {text: '编码', value: '3'},
-  {text: '运动', value: '4'},
+  {text: '读报', value: '4'},
+  {text: '运动', value: '5'},
 ]);
 const sceneColumns = ref([
   {text: '出租房', value: '1'},
@@ -211,7 +212,7 @@ const onSubmit = (focusing, values)=>{
             is-link
             readonly
             name="startDateTime"
-            label="时间选择"
+            label="开始时间"
             placeholder="点击选择时间"
             @click="isShowStartDateTimePicker = true"
         />
@@ -235,7 +236,7 @@ const onSubmit = (focusing, values)=>{
             is-link
             readonly
             name="endDateTime"
-            label="时间选择"
+            label="结束时间"
             placeholder="点击选择时间"
             @click="isShowEndDateTimePicker = true"
         />
