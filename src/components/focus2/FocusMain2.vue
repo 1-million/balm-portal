@@ -92,6 +92,7 @@ const focusing= ref();
 
 onMounted(()=>{
   getFocusing();
+  getScenes();
 });
 
 const onRefresh = () => {
@@ -103,6 +104,20 @@ const onRefresh = () => {
   loading.value = true;
   onLoad();
 };
+
+const getScenes= ()=>{
+  FocusRecordApi.getScenes().then((res) => {
+    if(res.data){
+      sceneColumns.value = res.data;
+      sceneName.value = sceneColumns.value[0].text;
+    }
+    // 主要通知
+    // showNotify({type: 'primary', message: res.msg});
+  }).catch((err) => {
+    // 危险通知
+    showNotify({type: 'danger', message: err.message});
+  })
+}
 
 const getFocusing= ()=>{
   FocusRecordApi.getFocusing().then((res) => {

@@ -11,7 +11,7 @@ const update = (params) => Api.post(`${MODULE_URL}/save`, { params });
 const queryPage = (params) => Api.get(`${MODULE_URL}/queryPage`, { params });
 const getFocusing = (params) => Api.get(`${MODULE_URL}/getFocusing`, { params });
 const setFinish = (params) => Api.post(`${MODULE_URL}/setFinish`, { ...params });
-
+const getScenes = (params) => Api.get(`${MODULE_URL}/getScenes`, { params });
 const FocusRecordApi= {
   add, // 增加
   del, // 删除
@@ -19,6 +19,7 @@ const FocusRecordApi= {
   queryPage, // 获取
   getFocusing,// 获取正在进行的专注记录
   setFinish,// 结束记录
+  getScenes,// 获取场景列表
 };
 
 export default FocusRecordApi;
