@@ -3,10 +3,17 @@ import {onMounted, ref} from "vue";
 import dayjs from "dayjs";
 import ArraySupport from 'dayjs/plugin/arraySupport'
 import toArray from 'dayjs/plugin/toArray'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import isLeapYear from 'dayjs/plugin/isLeapYear'
 import FocusRecordApi from "@/api/focusRecord";
 import {showNotify} from "vant";
 dayjs.extend(ArraySupport);
 dayjs.extend(toArray);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isLeapYear)
+
 
 const typeColumns = ref([
   {text: '阅读', value: '1'},
@@ -14,6 +21,7 @@ const typeColumns = ref([
   {text: '编码', value: '3'},
   {text: '读报', value: '4'},
   {text: '运动', value: '5'},
+  {text: '英语', value: '6'},
 ]);
 const sceneColumns = ref([
   {text: '出租房', value: '1'},
@@ -54,8 +62,11 @@ form.value.startDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
 // 通过计算函数返回数组
 
 const dateTimeConfirm = (type,data) => {
+  debugger;
   console.info(data);
-  const dateTime = dayjs([...data[0].selectedValues,...data[1].selectedValues]);
+  console.info(dayjs.tz.guess());
+  console.info(dayjs("2024-10-31"))
+  const dateTime = dayjs([...data[0].selectedValues,...data[1].selectedValues]).local();
   if(type==='date'){
     form.value.startDateTime = dateTime.format('YYYY-MM-DD HH:mm:ss');
     isShowStartDateTimePicker.value = false;
