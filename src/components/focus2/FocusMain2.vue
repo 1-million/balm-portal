@@ -93,6 +93,7 @@ const focusing= ref();
 onMounted(()=>{
   getFocusing();
   getScenes();
+  getTypes();
 });
 
 const onRefresh = () => {
@@ -104,6 +105,20 @@ const onRefresh = () => {
   loading.value = true;
   onLoad();
 };
+
+const getTypes= ()=>{
+  FocusRecordApi.getTypes().then((res) => {
+    if(res.data){
+      typeColumns.value = res.data;
+      typeName.value = typeColumns.value[0].text;
+    }
+    // 主要通知
+    // showNotify({type: 'primary', message: res.msg});
+  }).catch((err) => {
+    // 危险通知
+    showNotify({type: 'danger', message: err.message});
+  })
+}
 
 const getScenes= ()=>{
   FocusRecordApi.getScenes().then((res) => {
@@ -140,7 +155,7 @@ const onLoad = () => {
     list.value = list.value.concat(res.data.records);
     loading.value = false;
     // 主要通知
-    showNotify({type: 'primary', message: res.msg});
+    showNotify({type: 'success', message: res.msg});
     // 数据全部加载完成
     if (list.value.length >= res.data.total) {
       finished.value = true;
