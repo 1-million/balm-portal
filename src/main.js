@@ -9,6 +9,8 @@ import {axios} from "@/axios/axiosConfig";
 import Vant  from 'vant';
 // 2. 引入组件样式
 import 'vant/lib/index.css';
+// 解决PC端下列无法操作
+import '@vant/touch-emulator';
 createApp(App)
     .use(router)
     .use(Layui)
