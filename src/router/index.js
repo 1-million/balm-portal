@@ -3,13 +3,13 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: ()=> import('@/components/focus2/FocusMain2.vue')
+    name: 'mobile',
+    component: ()=> import('@/components/focus/mobile/FocusMain.vue')
   },
   {
-    path: '/test',
-    name: 'test',
-    component: ()=> import('@/components/focus2/FocusMain.vue')
+    path: '/pc',
+    name: 'pc',
+    component: ()=> import('@/components/focus/pc/FocusMain.vue')
   }
 ]
 

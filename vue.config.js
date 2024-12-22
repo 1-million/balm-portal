@@ -7,7 +7,7 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://1.117.69.195:9999', // 后端服务的地址
+        target: 'http://127.0.0.1:9999', // 后端服务的地址
         changeOrigin: true, // 是否改变源
         pathRewrite: { '^/api': '/api' }, // 路径重写规则
       },

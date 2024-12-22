@@ -1,5 +1,5 @@
 <script setup>
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {layer} from "@layui/layui-vue";
 import FocusRecordApi from "@/api/focusRecord";
 
@@ -15,15 +15,37 @@ const columns = ref([
   {title: "操作", width: "100px", customSlot: "operator", key: "operator", fixed: "right", ignoreExport: true}
 
 ]);
-const dataSource = ref([
-  {
-    'type': "阅读",
-    'startDateTime': "2024-10-21 22:42",
-    'endDateTime': "2024-10-21 23:42",
-    'scene': "出租房",
-    "remark": "编写专注记录软件。"
-  }
-]);
+const types = ref([]);
+const getTypes= ()=>{
+  FocusRecordApi.getTypes().then((res) => {
+    if(res.data){
+      types.value = res.data;
+    }
+  }).catch((err) => {
+    // 危险通知
+    layer.msg(err.message, { icon : 2})
+  })
+}
+const queryParam = ref({});
+const dataSource = ref();
+onMounted(()=>{
+  getTypes();
+  FocusRecordApi.queryPage(queryParam.value).then((res) => {
+    dataSource.value = dataSource.value.concat(res.data.records);
+    loading.value = false;
+    // 主要通知
+    layer.msg(res.message, { icon : 1})
+    // 数据全部加载完成
+    if (dataSource.value.length >= res.data.total) {
+      loading.value = true;
+    }else{
+      queryParam.value.current += 1;
+    }
+  }).catch((err) => {
+    // 危险通知
+    layer.msg(err.message, { icon : 2})
+  })
+})
 const selectedKeys = ref([]);
 const page = reactive({current: 1, limit: 10, total: 100});
 
@@ -47,10 +69,9 @@ const reset = ()=>{
         <lay-form :model="form" pane>
           <lay-form-item label="类型" prop="form.type">
             <lay-select v-model="form.type" placeholder="专注类型，如：阅读、编码等。">
-              <lay-select-option :value="1" label="阅读"></lay-select-option>
-              <lay-select-option :value="2" label="学习"></lay-select-option>
-              <lay-select-option :value="3" label="编码"></lay-select-option>
-              <lay-select-option :value="4" label="运动"></lay-select-option>
+              <template v-for="type of types" :key="type.id">
+                <lay-select-option :value="type.value">{{type.text}}</lay-select-option>
+              </template>
             </lay-select>
           </lay-form-item>
           <lay-form-item label="开始时间" prop="form.startDateTime">
