@@ -2,18 +2,14 @@
   <div class="login-wrap">
     <div class="login-root">
       <div class="login-main">
-        <img class="login-one-ball"
-          src="https://assets.codehub.cn/micro-frontend/login/fca1d5960ccf0dfc8e32719d8a1d80d2.png" />
-        <img class="login-two-ball"
-          src="https://assets.codehub.cn/micro-frontend/login/4bcf705dad662b33a4fc24aaa67f6234.png" />
+<!--        <img class="login-one-ball"-->
+<!--          src="https://assets.codehub.cn/micro-frontend/login/fca1d5960ccf0dfc8e32719d8a1d80d2.png" />-->
+<!--        <img class="login-two-ball"-->
+<!--          src="https://assets.codehub.cn/micro-frontend/login/4bcf705dad662b33a4fc24aaa67f6234.png" />-->
         <div class="login-container">
           <div class="login-side">
             <div class="login-bg-title">
-              <h1>layui vue admin</h1>
-
-              <h3 style="margin: 20px auto">
-                开 箱 即 用 的 layui vue 企 业 级 前 端 模 板
-              </h3>
+              <h1>Welcome to admin.</h1>
             </div>
           </div>
           <div class="login-ID">
@@ -59,33 +55,33 @@
                 </div>
               </lay-tab-item>
             </lay-tab>
-            <lay-line style="margin: 34px 0px;">Other login methods</lay-line>
-            <ul class="other-ways">
-              <li>
-                <div class="line-container">
-                  <img class="icon" src="../../assets/login/w.svg" />
-                  <p class="text">微信</p>
-                </div>
-              </li>
-              <li>
-                <div class="line-container">
-                  <img class="icon" src="../../assets/login/q.svg" />
-                  <p class="text">钉钉</p>
-                </div>
-              </li>
-              <li>
-                <div class="line-container">
-                  <img class="icon" src="../../assets/login/a.svg" />
-                  <p class="text">Gitee</p>
-                </div>
-              </li>
-              <li>
-                <div class="line-container">
-                  <img class="icon" src="../../assets/login/f.svg" />
-                  <p class="text">Github</p>
-                </div>
-              </li>
-            </ul>
+<!--            <lay-line style="margin: 34px 0px;">Other login methods</lay-line>-->
+<!--            <ul class="other-ways">-->
+<!--              <li>-->
+<!--                <div class="line-container">-->
+<!--                  <img class="icon" src="../../assets/login/w.svg" />-->
+<!--                  <p class="text">微信</p>-->
+<!--                </div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="line-container">-->
+<!--                  <img class="icon" src="../../assets/login/q.svg" />-->
+<!--                  <p class="text">钉钉</p>-->
+<!--                </div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="line-container">-->
+<!--                  <img class="icon" src="../../assets/login/a.svg" />-->
+<!--                  <p class="text">Gitee</p>-->
+<!--                </div>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="line-container">-->
+<!--                  <img class="icon" src="../../assets/login/f.svg" />-->
+<!--                  <p class="text">Github</p>-->
+<!--                </div>-->
+<!--              </li>-->
+<!--            </ul>-->
           </div>
         </div>
       </div>
@@ -94,11 +90,11 @@
 </template>
 
 <script lang="ts">
-import { login } from '../../api/module/user'
-import { verificationImg, loginQrcode } from '../../api/module/commone'
+import { login } from '@/api/module/user'
+import { verificationImg, loginQrcode } from '@/api/module/commone'
 import { defineComponent, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '../../store/user'
+import { useUserStore } from '@/store/user'
 import { layer } from '@layui/layer-vue'
 
 export default defineComponent({
@@ -126,7 +122,7 @@ export default defineComponent({
               userStore.token = data.token
               await userStore.loadMenus()
               await userStore.loadPermissions()
-              router.push('/')
+              await router.push('/')
             })
           } else {
             layer.msg(msg, { icon: 2 })
