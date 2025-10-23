@@ -22,6 +22,7 @@
             v-model:selectedKey="selectedKey"
             :showLine="showLine"
             :expandKeys="[1, 3, 4]"
+            :replace-fields="replaceFields"
             @node-click="handleClick"
         >
           <template #title="{ data }">
@@ -247,59 +248,30 @@
   </lay-container>
 </template>
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import {ref, reactive, onMounted} from 'vue'
 import { layer } from '@layui/layui-vue'
+import {getIndicatorTree} from "@/api/module/indicator";
+import {menu} from "@/api/module/user";
+import {loginQrcode} from "@/api/module/commone";
 
-const data = ref([
-  {
-    title: 'xxxx公司',
-    id: 1,
-    checked: true,
-    children: [
-      {
-        title: '研发部',
-        id: 2,
-        children: [
-          {
-            title: '研发一部',
-            id: 3
-          },
-          {
-            title: '研发二部',
-            id: 4
-          },
-          {
-            title: '研发三部',
-            id: 5
-          }
-        ]
-      },
-      {
-        title: '测试部',
-        id: 6,
-        children: [
-          {
-            title: '测试一部',
-            id: 7,
-            disabled: true
-          },
-          {
-            title: '测试二部',
-            id: 8
-          }
-        ]
-      },
-      {
-        title: '设计部',
-        id: 9
-      },
-      {
-        title: '市场部',
-        id: 10
-      }
-    ]
-  }
-])
+const replaceFields = ref(
+    {id: "id", title: "name", children: "children", disabled: "status", checked: "checked", expanded: "spread", leaf: "leaf"}
+)
+const data = ref([])
+
+onMounted(()=>{
+  debugger
+  getIndicatorTree()
+  // const getIndicatorTreeList = () => {
+  //   let { data, code, msg } =
+  //   if (code == 200) {
+  //     data.value = data.data
+  //   } else {
+  //     layer.msg(msg, { icon: 2 })
+  //   }
+  // }
+})
+
 const showLine = ref(false)
 const selectedKey = ref('')
 const selectedNode = ref({
