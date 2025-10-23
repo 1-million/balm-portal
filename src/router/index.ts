@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory, NavigationGuardNext, RouteLocationN
 import routes from './module/base-routes'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { useUserStore } from "../store/user";
+import { useUserStore } from "@/store/user";
 
 NProgress.configure({ showSpinner: false })
 

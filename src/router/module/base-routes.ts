@@ -40,7 +40,21 @@ export default [
         meta: { title: '监控页', requireAuth: true },
       }
     ]
-  }, {
+  },
+  {
+    path: '/configs',
+    component: BasicLayout,
+    meta: { title: '配置中心' },
+    children: [
+      {
+        //TimeSlotManager：直接体现“时段管理”功能
+        path: '/configs/tsmConfig',
+        component: () => import('../../views/configs/tsmConfig/index.vue'),
+        meta: { title: '指标管理' },
+      },
+    ]
+  },
+  {
     path: '/error',
     component: BasicLayout,
     meta: { title: '错误页面' },
