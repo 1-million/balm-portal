@@ -18,7 +18,7 @@
         <lay-tree
             v-show="!isFold"
             style="margin-top: 10px"
-            :data="data"
+            :data="treeData"
             v-model:selectedKey="selectedKey"
             :showLine="showLine"
             :expandKeys="[1, 3, 4]"
@@ -257,19 +257,20 @@ import {loginQrcode} from "@/api/module/commone";
 const replaceFields = ref(
     {id: "id", title: "name", children: "children", disabled: "status", checked: "checked", expanded: "spread", leaf: "leaf"}
 )
-const data = ref([])
+const treeData = ref([])
 
 onMounted(()=>{
   debugger
-  getIndicatorTree()
-  // const getIndicatorTreeList = () => {
-  //   let { data, code, msg } =
-  //   if (code == 200) {
-  //     data.value = data.data
-  //   } else {
-  //     layer.msg(msg, { icon: 2 })
-  //   }
-  // }
+  const getIndicatorTreeList = async () => {
+    let { data, code, msg } = await getIndicatorTree()
+    debugger
+    if (code == 200) {
+      treeData.value = data
+    } else {
+      layer.msg(msg, { icon: 2 })
+    }
+  }
+  getIndicatorTreeList()
 })
 
 const showLine = ref(false)
