@@ -109,15 +109,20 @@
             删除
           </lay-button>
         </template>
+        <template #status="{ row }">
+          <div v-show="row.status == 0">
+            <lay-tag color="#165DFF" variant="light">停用</lay-tag>
+          </div>
+          <div v-show="row.status == 1">
+            <lay-tag color="#2dc570" variant="light">启用</lay-tag>
+          </div>
+        </template>
         <template #type="{ row }">
-          <div v-show="row.type == '目录'">
-            <lay-tag color="#165DFF" variant="light">目录</lay-tag>
+          <div v-show="row.type == 0">
+            <lay-tag color="#165DFF" variant="light">指标</lay-tag>
           </div>
-          <div v-show="row.type == '菜单'">
-            <lay-tag color="#2dc570" variant="light">菜单</lay-tag>
-          </div>
-          <div v-show="row.type == '外链'">
-            <lay-tag color="#F5319D" variant="light">外链</lay-tag>
+          <div v-show="row.type == 1">
+            <lay-tag color="#2dc570" variant="light">步骤</lay-tag>
           </div>
         </template>
       </lay-table>
@@ -173,8 +178,9 @@
   </lay-container>
 </template>
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import {ref, reactive, onMounted} from 'vue'
 import { layer } from '@layui/layui-vue'
+import {api_getIndicatorTree, getIndicatorTree} from "@/api/module/indicator";
 const searchQuery = ref({
   address: '',
   identifying: '',
@@ -210,33 +216,43 @@ const columns6 = [
     type: 'checkbox',
     title: '复选'
   },
-
   {
-    title: '菜单名称',
+    title: '指标名称',
     key: 'name',
     customSlot: 'name'
   },
   {
-    title: '路由地址',
-    key: 'routePath'
-  },
-  {
-    title: '组件路径',
-    key: 'compontPath'
-  },
-  {
     title: '排序',
-    width: '120px',
-    key: 'sort'
+    width: '40px',
+    key: 'sortNo',
   },
   {
-    title: '可见',
-    key: 'isShow'
+    title: '开始时间',
+    key: 'startPeriod'
+  },
+  {
+    title: '结束时间',
+    key: 'endPeriod'
+  },
+  {
+    title: '状态',
+    key: 'status',
+    width: '65px',
+    customSlot: 'status'
   },
   {
     title: '类型',
     key: 'type',
+    width: '65px',
     customSlot: 'type'
+  },
+  {
+    title: '备注',
+    key: 'remark'
+  },
+  {
+    title: '创建时间',
+    key: 'createTime'
   },
   {
     title: '操作',
@@ -245,7 +261,7 @@ const columns6 = [
   }
 ]
 
-const dataSource7 = [
+const dataSource7 = ref([
   {
     "id": 1,
     "sortNo": 1,
@@ -255,7 +271,7 @@ const dataSource7 = [
     "status": 1,
     "type": 0,
     "remark": null,
-    "createTime": "2025-10-20T02:20:02.000+00:00",
+    "createTime": "2025-10-20 10:20:02",
     "children": [
       {
         "id": 4,
@@ -266,8 +282,7 @@ const dataSource7 = [
         "status": 1,
         "type": 0,
         "remark": null,
-        "createTime": "2025-10-20T02:20:44.000+00:00",
-        "children": [],
+        "createTime": "2025-10-20 10:20:44",
         "pId": 1
       }
     ],
@@ -282,7 +297,7 @@ const dataSource7 = [
     "status": 1,
     "type": 0,
     "remark": null,
-    "createTime": "2025-10-21T06:27:10.000+00:00",
+    "createTime": "2025-10-21 14:27:10",
     "children": [
       {
         "id": 3,
@@ -293,14 +308,27 @@ const dataSource7 = [
         "status": 1,
         "type": 0,
         "remark": null,
-        "createTime": "2025-10-20T02:21:20.000+00:00",
-        "children": [],
+        "createTime": "2025-10-20 10:21:20",
+        "children": [
+          {
+            "id": 13,
+            "sortNo": 1,
+            "startPeriod": "2025-09-24 00:31:56",
+            "endPeriod": "2025-10-01 00:31:56",
+            "name": "管浩辰2222",
+            "status": 0,
+            "type": 1,
+            "remark": "incididunt elit pariatur",
+            "createTime": "2025-10-23 17:48:48",
+            "pId": 3
+          }
+        ],
         "pId": 2
       }
     ],
     "pId": 0
   }
-]
+])
 
 const dataSource6 = [
   {
@@ -356,6 +384,17 @@ const dataSource6 = [
     ]
   }
 ]
+
+onMounted(() => {
+  //加载表格数据
+  const getIndicatorTree = async ()=>{
+    let {data,code,msg} = await api_getIndicatorTree()
+    if(code == 200){
+      dataSource7.value = data
+    }
+  }
+  getIndicatorTree()
+})
 
 const getCheckData6 = function () {
   layer.msg(tableRef6.value.getCheckData())

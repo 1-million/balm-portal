@@ -53,7 +53,7 @@ export default [
       {
         //TimeSlotManager：直接体现“时段管理”功能
         path: '/configs/indicator',
-        component: () => import('@/views/configs/indicator/index.vue'),
+        component: () => import('@/views/admin/configs/indicator/index.vue'),
         meta: { title: '指标管理' },
       },
     ]
