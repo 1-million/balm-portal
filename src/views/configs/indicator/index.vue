@@ -1,243 +1,168 @@
 <template>
-  <lay-container fluid="true" class="organization-box">
-    <div style="display: flex">
-      <div :style="{ width: isFold ? `0px` : `250px` }" class="left-tree">
-        <!-- tree -->
-        <div v-show="!isFold">
-          <lay-button type="normal" size="sm" @click="toAdd">
-            <lay-icon type="layui-icon-addition"></lay-icon>新建
-          </lay-button>
-          <lay-button type="warm" size="sm" @click="toEdit">
-            <lay-icon type="layui-icon-edit"></lay-icon>修改
-          </lay-button>
-          <lay-button type="danger" size="sm" @click="toDelete">
-            <lay-icon type="layui-icon-delete"></lay-icon>删除
-          </lay-button>
-        </div>
-
-        <lay-tree
-            v-show="!isFold"
-            style="margin-top: 10px"
-            :data="treeData"
-            v-model:selectedKey="selectedKey"
-            :showLine="showLine"
-            :expandKeys="[1, 3, 4]"
-            :replace-fields="replaceFields"
-            @node-click="handleClick"
-        >
-          <template #title="{ data }">
-            <span :class="selectedKey == data.id ? 'isChecked' : ''">
-              {{ data.title }} {{ data.id }}
-            </span>
-          </template>
-        </lay-tree>
-        <div class="isFold" @click="isFold = !isFold">
-          &nbsp;<lay-icon v-if="!isFold" class="layui-icon-left"></lay-icon>
-          <lay-icon v-else class="layui-icon-right"></lay-icon>
-        </div>
-      </div>
-      <div style="flex: 1; padding: 10px; over-flow: auto">
-        <!-- table -->
-        <lay-card>
-          <lay-form>
-            <lay-row>
-              <lay-col :md="5">
-                <lay-form-item label="用户账号" label-width="80">
-                  <lay-input
-                      v-model="searchQuery.userAccount"
-                      placeholder="请输入"
-                      size="sm"
-                      :allow-clear="true"
-                      style="width: 98%"
-                  ></lay-input>
-                </lay-form-item>
-              </lay-col>
-              <lay-col :md="5">
-                <lay-form-item label="用户名" label-width="80">
-                  <lay-input
-                      v-model="searchQuery.userName"
-                      placeholder="请输入"
-                      size="sm"
-                      :allow-clear="true"
-                      style="width: 98%"
-                  ></lay-input>
-                </lay-form-item>
-              </lay-col>
-              <lay-col :md="5">
-                <lay-form-item label="性别" label-width="80">
-                  <lay-select
-                      class="search-input"
-                      size="sm"
-                      v-model="searchQuery.sex"
-                      :allow-clear="true"
-                      placeholder="请选择"
-                  >
-                    <lay-select-option
-                        value="man"
-                        label="男"
-                    ></lay-select-option>
-                    <lay-select-option
-                        value="woman"
-                        label="女"
-                    ></lay-select-option>
-                  </lay-select>
-                </lay-form-item>
-              </lay-col>
-              <lay-col :md="5">
-                <lay-form-item label-width="20">
-                  <lay-button
-                      style="margin-left: 20px"
-                      type="normal"
-                      size="sm"
-                      @click="toSearch"
-                  >
-                    查询
-                  </lay-button>
-                  <lay-button size="sm" @click="toReset"> 重置 </lay-button>
-                </lay-form-item>
-              </lay-col>
-            </lay-row>
-          </lay-form>
-        </lay-card>
-        <lay-table
-            :page="page"
-            :height="'100%'"
-            :columns="columns"
-            :loading="loading"
-            :default-toolbar="true"
-            :data-source="dataSource"
-            v-model:selected-keys="selectedKeys"
-            @change="change"
-            @sortChange="sortChange"
-        >
-          <template #status="{ row }">
-            <lay-switch
-                :model-value="row.status"
-                @change="changeStatus($event, row)"
-            ></lay-switch>
-          </template>
-          <template #role="{ row }">
-            <lay-tag color="#165DFF" variant="light">{{ row.role }}</lay-tag>
-          </template>
-
-          <template v-slot:toolbar>
-            <lay-button
-                size="sm"
-                type="primary"
-                @click="changeVisible11('新增', null)"
-            >新增</lay-button
-            >
-            <lay-button size="sm" @click="toRemove">删除</lay-button>
-          </template>
-          <template v-slot:operator="{ row }">
-            <lay-button
-                size="xs"
-                border="green"
-                border-style="dashed"
-                @click="changeVisible11('编辑', row)"
-            >编辑</lay-button
-            >
-            <lay-popconfirm
-                content="确定要删除此用户吗?"
-                @confirm="confirm"
-                @cancel="cancel"
-            >
-              <lay-button size="xs" border="red" border-style="dashed"
-              >删除</lay-button
+  <lay-container fluid="true" class="menu-box">
+    <lay-card>
+      <lay-form style="margin-top: 10px">
+        <lay-row>
+          <lay-col :md="5">
+            <lay-form-item label="菜单名称" label-width="80">
+              <lay-input
+                  v-model="searchQuery.name"
+                  placeholder="请输入"
+                  size="sm"
+                  :allow-clear="true"
+                  style="width: 98%"
+              ></lay-input>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="5">
+            <lay-form-item label="菜单地址" label-width="80">
+              <lay-input
+                  v-model="searchQuery.address"
+                  placeholder="请输入"
+                  size="sm"
+                  :allow-clear="true"
+                  style="width: 98%"
+              ></lay-input>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="5">
+            <lay-form-item label="权限标识" label-width="80">
+              <lay-input
+                  v-model="searchQuery.identifying"
+                  placeholder="请输入"
+                  size="sm"
+                  :allow-clear="true"
+                  style="width: 98%"
+              ></lay-input>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="5">
+            <lay-form-item label-width="20">
+              <lay-button
+                  style="margin-left: 20px"
+                  type="normal"
+                  size="sm"
+                  @click="toSearch"
               >
-            </lay-popconfirm>
-          </template>
-        </lay-table>
-      </div>
+                查询
+              </lay-button>
+              <lay-button size="sm" @click="toReset"> 重置 </lay-button>
+            </lay-form-item>
+          </lay-col>
+        </lay-row>
+      </lay-form>
+    </lay-card>
+    <!-- table -->
+    <div class="table-box">
+      <lay-table
+          :height="`100%`"
+          ref="tableRef6"
+          :loading="loading"
+          children-column-name="children"
+          :columns="columns6"
+          :data-source="dataSource7"
+          :default-toolbar="true"
+          :default-expand-all="defaultExpandAll6"
+          :expand-index="1"
+      >
+        <template #toolbar>
+          <lay-button type="primary" size="sm" @click="getCheckData6"
+          >获取选中数据</lay-button
+          >
+          <lay-button
+              size="sm"
+              @click="changeVisible11('新建', null)"
+              type="normal"
+          >
+            新建
+          </lay-button>
+          <lay-button size="sm" @click="expandAll6(true)">展开全部</lay-button>
+          <lay-button size="sm" @click="expandAll6(false)">折叠全部</lay-button>
+        </template>
+        <template #name="{ row }">
+          <lay-icon :class="row.icon"></lay-icon> &nbsp;&nbsp;
+          {{ row.name }}
+        </template>
+        <template #option="{ row }">
+          <lay-button
+              @click="changeVisible11('新建', null)"
+              size="xs"
+              border="blue"
+              border-style="dashed"
+          >
+            添加
+          </lay-button>
+          <lay-button
+              @click="changeVisible11('修改', row)"
+              size="xs"
+              border="green"
+              border-style="dashed"
+          >
+            修改
+          </lay-button>
+          <lay-button
+              @click="toRemove"
+              size="xs"
+              border="red"
+              border-style="dashed"
+          >
+            删除
+          </lay-button>
+        </template>
+        <template #type="{ row }">
+          <div v-show="row.type == '目录'">
+            <lay-tag color="#165DFF" variant="light">目录</lay-tag>
+          </div>
+          <div v-show="row.type == '菜单'">
+            <lay-tag color="#2dc570" variant="light">菜单</lay-tag>
+          </div>
+          <div v-show="row.type == '外链'">
+            <lay-tag color="#F5319D" variant="light">外链</lay-tag>
+          </div>
+        </template>
+      </lay-table>
     </div>
-    <lay-layer v-model="visible11" :title="title" :area="['500px', '450px']">
+
+    <lay-layer v-model="visible11" :title="title" :area="['700px', '370px']">
       <div style="padding: 20px">
         <lay-form :model="model11" ref="layFormRef11" required>
-          <lay-form-item label="用户账号" prop="account">
-            <lay-input v-model="model11.account"></lay-input>
-          </lay-form-item>
-          <lay-form-item label="用户名" prop="name">
-            <lay-input v-model="model11.name"></lay-input>
-          </lay-form-item>
-          <lay-form-item label="性别" prop="sex">
-            <lay-select v-model="model11.sex" style="width: 100%">
-              <lay-select-option value="男" label="男"></lay-select-option>
-              <lay-select-option value="女" label="女"></lay-select-option>
-            </lay-select>
-          </lay-form-item>
-          <lay-form-item label="角色" prop="role">
-            <lay-input v-model="model11.role"></lay-input>
-          </lay-form-item>
-          <lay-form-item label="状态" prop="status">
-            <lay-switch :model-value="model11.status"></lay-switch>
-          </lay-form-item>
-        </lay-form>
-        <div style="width: 100%; text-align: center">
-          <lay-button size="sm" type="primary" @click="toSubmit"
-          >保存</lay-button
-          >
-          <lay-button size="sm" @click="toCancel">取消</lay-button>
-        </div>
-      </div>
-    </lay-layer>
-
-    <lay-layer v-model="visible22" :title="title22" :area="['700px', '400px']">
-      <div style="padding: 20px">
-        <lay-form :model="model22" ref="layFormRef11" required>
           <lay-row>
             <lay-col md="12">
-              <lay-form-item label="上级机构" prop="organization">
-                <lay-select v-model="model22.organization" style="width: 100%">
-                  <lay-select-option value="1" label="研发部">
-                  </lay-select-option>
-                  <lay-select-option value="2" label="测试部">
-                  </lay-select-option>
-                  <lay-select-option value="3" label="设计部">
-                  </lay-select-option>
-                  <lay-select-option value="4" label="市场部">
-                  </lay-select-option>
-                  <lay-select-option value="5" label="运维部">
-                  </lay-select-option>
-                </lay-select>
+              <lay-form-item label="菜单名称" prop="name">
+                <lay-input v-model="model11.name"></lay-input>
               </lay-form-item>
-              <lay-form-item label="机构名称" prop="name">
-                <lay-input v-model="model22.name"></lay-input>
+              <lay-form-item label="路由路径" prop="routePath">
+                <lay-input v-model="model11.routePath"></lay-input>
               </lay-form-item>
-              <lay-form-item label="机构全称" prop="fullName">
-                <lay-input v-model="model22.fullName"></lay-input>
+              <lay-form-item label="组件路径" prop="compontPath">
+                <lay-input v-model="model11.compontPath"></lay-input>
               </lay-form-item>
-              <lay-form-item label="机构代码" prop="code">
-                <lay-input v-model="model22.code"></lay-input>
+              <lay-form-item label="图标" prop="icon">
+                <lay-input v-model="model11.icon"></lay-input>
               </lay-form-item>
             </lay-col>
             <lay-col md="12">
-              <lay-form-item label="机构类型" prop="type">
-                <lay-select v-model="model22.type" style="width: 100%">
-                  <lay-select-option value="1" label="公司"></lay-select-option>
-                  <lay-select-option value="2" label="子公司">
-                  </lay-select-option>
-                  <lay-select-option value="3" label="部门"></lay-select-option>
-                  <lay-select-option value="4" label="小组"></lay-select-option>
-                </lay-select>
-              </lay-form-item>
-              <lay-form-item label="排序号" prop="sort">
+              <lay-form-item label="排序" prop="sort">
                 <lay-input-number
                     style="width: 100%"
-                    v-model="model22.sort"
+                    v-model="model11.sort"
                     position="right"
                 ></lay-input-number>
               </lay-form-item>
-              <lay-form-item label="备注" prop="remark">
-                <lay-textarea
-                    placeholder="请输入备注"
-                    v-model="model22.remark"
-                    :rows="4"
-                ></lay-textarea>
+              <lay-form-item label="是否显示" prop="isShow">
+                <lay-select v-model="model11.isShow" style="width: 100%">
+                  <lay-select-option value="是" label="是"></lay-select-option>
+                  <lay-select-option value="否" label="否"></lay-select-option>
+                </lay-select>
+              </lay-form-item>
+
+              <lay-form-item label="类型" prop="type">
+                <lay-input v-model="model11.type"></lay-input>
               </lay-form-item>
             </lay-col>
           </lay-row>
         </lay-form>
-        <div style="width: 100%; text-align: center">
+        <div style="width: 97%; text-align: right">
           <lay-button size="sm" type="primary" @click="toSubmit"
           >保存</lay-button
           >
@@ -248,272 +173,211 @@
   </lay-container>
 </template>
 <script setup lang="ts">
-import {ref, reactive, onMounted} from 'vue'
+import { ref, reactive } from 'vue'
 import { layer } from '@layui/layui-vue'
-import {getIndicatorTree} from "@/api/module/indicator";
-import {menu} from "@/api/module/user";
-import {loginQrcode} from "@/api/module/commone";
-
-const replaceFields = ref(
-    {id: "id", title: "name", children: "children", disabled: "status", checked: "checked", expanded: "spread", leaf: "leaf"}
-)
-const treeData = ref([])
-
-onMounted(()=>{
-  debugger
-  const getIndicatorTreeList = async () => {
-    let { data, code, msg } = await getIndicatorTree()
-    debugger
-    if (code == 200) {
-      treeData.value = data
-    } else {
-      layer.msg(msg, { icon: 2 })
-    }
-  }
-  getIndicatorTreeList()
-})
-
-const showLine = ref(false)
-const selectedKey = ref('')
-const selectedNode = ref({
-  id: 0,
-  title: ''
-})
-const isFold = ref(false)
 const searchQuery = ref({
-  userAccount: '',
-  userName: '',
-  sex: ''
+  address: '',
+  identifying: '',
+  name: ''
 })
+
 function toReset() {
   searchQuery.value = {
-    userAccount: '',
-    userName: '',
-    sex: ''
+    address: '',
+    identifying: '',
+    name: ''
   }
-}
-function handleClick(node: any) {
-  selectedNode.value = JSON.parse(JSON.stringify(node))
-  page.current = selectedNode.value.id
-  change(page)
-}
-function toAdd() {
-  visible22.value = true
-}
-function toEdit() {
-  model22.value = {
-    organization: '1',
-    name: '研发部',
-    fullName: 'xxxx公司-研发部',
-    code: '001',
-    type: '1',
-    sort: 1,
-    remark: '备注'
-  }
-  visible22.value = true
-}
-function toDelete() {
-  if (selectedKey.value == '') {
-    layer.msg('您未选择组织机构，请先选择要删除的组织机构', {
-      icon: 3,
-      time: 2000
-    })
-    return
-  }
-  layer.confirm(
-      '您将删除所选中的组织机构 [ ' + selectedNode.value.title + ' ] ？',
-      {
-        title: '提示',
-        btn: [
-          {
-            text: '确定',
-            callback: (id: any) => {
-              layer.msg('您已成功删除')
-              layer.close(id)
-            }
-          },
-          {
-            text: '取消',
-            callback: (id: any) => {
-              layer.msg('您已取消操作')
-              layer.close(id)
-            }
-          }
-        ]
-      }
-  )
 }
 
 function toSearch() {
   page.current = 1
   change(page)
 }
-
-const loading = ref(false)
-const selectedKeys = ref()
-const page = reactive({ current: 1, limit: 10, total: 100 })
-const columns = ref([
-  { title: '选项', width: '55px', type: 'checkbox', fixed: 'left' },
-  { title: '编号', width: '80px', key: 'id', fixed: 'left', sort: 'id' },
-  { title: '用户账号', width: '80px', key: 'account', sort: 'account' },
-  { title: '用户名', width: '80px', key: 'name', sort: 'name' },
-  { title: '性别', width: '80px', key: 'sex', sort: 'sex' },
-  { title: '角色', width: '120px', key: 'role', customSlot: 'role' },
-  {
-    title: '创建时间',
-    width: '120px',
-    key: 'joinTime'
-  },
-  { title: '状态', width: '120px', key: 'status', sort: 'status' },
-
-  {
-    title: '操作',
-    width: '150px',
-    customSlot: 'operator',
-    key: 'operator',
-    fixed: 'right'
-  }
-])
 const change = (page: any) => {
   loading.value = true
   setTimeout(() => {
-    dataSource.value = loadDataSource(page.current, page.limit)
+    //
     loading.value = false
   }, 1000)
 }
-const sortChange = (key: any, sort: number) => {
-  layer.msg(`字段${key} - 排序${sort}, 你可以利用 sort-change 实现服务端排序`)
-}
-const dataSource = ref([
+const page = reactive({ current: 1, limit: 10, total: 100 })
+const loading = ref(false)
+const tableRef6 = ref()
+
+const columns6 = [
   {
-    id: '1',
-    name: '管理员',
-    sex: '男',
-    role: '管理员',
-    account: 'admin',
-    joinTime: '2022-02-09 18:34:56',
-    status: true
+    fixed: 'left',
+    type: 'checkbox',
+    title: '复选'
+  },
+
+  {
+    title: '菜单名称',
+    key: 'name',
+    customSlot: 'name'
   },
   {
-    id: '2',
-    name: '张三2',
-    sex: '男',
-    role: '普通用户',
-    account: '用户2',
-    joinTime: '2022-02-09 18:34:56',
-    status: true
+    title: '路由地址',
+    key: 'routePath'
   },
   {
-    id: '3',
-    name: '李四3',
-    sex: '男',
-    role: '普通用户',
-    account: '用户3',
-    joinTime: '2022-02-09 18:34:56',
-    status: true
+    title: '组件路径',
+    key: 'compontPath'
   },
   {
-    id: '4',
-    name: '用户4',
-    sex: '男',
-    role: '普通用户',
-    account: '用户4',
-    joinTime: '2022-02-09 18:34:56',
-    status: true
+    title: '排序',
+    width: '120px',
+    key: 'sort'
   },
   {
-    id: '5',
-    name: '王五5',
-    sex: '男',
-    role: '普通用户',
-    account: '用户5',
-    joinTime: '2022-02-09 18:34:56',
-    status: true
+    title: '可见',
+    key: 'isShow'
   },
   {
-    id: '6',
-    name: '赵六6',
-    sex: '男',
-    role: '普通用户',
-    account: '用户6',
-    joinTime: '2022-02-09 18:34:56',
-    status: true
+    title: '类型',
+    key: 'type',
+    customSlot: 'type'
   },
   {
-    id: '7',
-    name: '黄齐7',
-    sex: '男',
-    role: '普通用户',
-    account: '用户7',
-    joinTime: '2022-02-09 18:34:56',
-    status: true
-  },
-  {
-    id: '8',
-    name: '用户8',
-    sex: '男',
-    role: '普通用户',
-    account: '用户8',
-    joinTime: '2022-02-09 18:34:56',
-    status: true
-  },
-  {
-    id: '9',
-    name: '游客9',
-    sex: '男',
-    role: '游客',
-    account: '游客9',
-    joinTime: '用户22-02-09 18:34:56',
-    status: true
-  },
-  {
-    id: '10',
-    name: '用户10',
-    sex: '女',
-    role: '普通用户',
-    account: 'user10',
-    joinTime: '2022-02-09 18:34:56 18:34:56',
-    status: true
+    title: '操作',
+    key: 'option',
+    customSlot: 'option'
   }
-])
-const changeStatus = (isChecked: boolean, row: any) => {
-  dataSource.value.forEach((item) => {
-    if (item.id === row.id) {
-      layer.msg('Success', { icon: 1 }, () => {
-        item.status = isChecked
-      })
-    }
-  })
-}
-const remove = () => {
-  layer.msg(selectedKeys.value, { area: '50%' })
-}
-const loadDataSource = (page: number, pageSize: number) => {
-  var response = []
-  var startIndex = (page - 1) * pageSize + 1
-  var endIndex = page * pageSize
-  for (var i = startIndex; i <= endIndex; i++) {
-    response.push({
-      id: `${i}`,
-      account: `user${i}`,
-      sex: '男',
-      name: `用户${i}`,
-      joinTime: '2022-02-09 18:34:56',
-      role: '普通用户',
-      status: true
-    })
+]
+
+const dataSource7 = [
+  {
+    "id": 1,
+    "sortNo": 1,
+    "startPeriod": "2025-01-01 00:00:00",
+    "endPeriod": "2025-12-31 23:59:59",
+    "name": "年度指标",
+    "status": 1,
+    "type": 0,
+    "remark": null,
+    "createTime": "2025-10-20T02:20:02.000+00:00",
+    "children": [
+      {
+        "id": 4,
+        "sortNo": 1,
+        "startPeriod": "2025-01-01 00:00:00",
+        "endPeriod": "2025-12-31 23:59:59",
+        "name": "年度阅读",
+        "status": 1,
+        "type": 0,
+        "remark": null,
+        "createTime": "2025-10-20T02:20:44.000+00:00",
+        "children": [],
+        "pId": 1
+      }
+    ],
+    "pId": 0
+  },
+  {
+    "id": 2,
+    "sortNo": null,
+    "startPeriod": null,
+    "endPeriod": null,
+    "name": "突发指标",
+    "status": 1,
+    "type": 0,
+    "remark": null,
+    "createTime": "2025-10-21T06:27:10.000+00:00",
+    "children": [
+      {
+        "id": 3,
+        "sortNo": 1,
+        "startPeriod": "2025-01-01 00:00:00",
+        "endPeriod": "2025-02-28 23:59:59",
+        "name": "计算机基础",
+        "status": 1,
+        "type": 0,
+        "remark": null,
+        "createTime": "2025-10-20T02:21:20.000+00:00",
+        "children": [],
+        "pId": 2
+      }
+    ],
+    "pId": 0
   }
-  return response
+]
+
+const dataSource6 = [
+  {
+    id: '10001',
+    name: '工作空间',
+    type: '目录',
+    icon: 'layui-icon-home',
+    age: 0,
+    routePath: '/workspace',
+    compontPath: '',
+    isShow: '是',
+    children: [
+      {
+        id: '10009',
+        name: '工作台',
+        type: '菜单',
+        sort: 1,
+        icon: 'layui-icon-util',
+        routePath: '/workspace/workbench',
+        compontPath: '/workspace/workbench',
+        isShow: '是'
+      },
+      {
+        id: '10012',
+        name: '控制台',
+        type: '菜单',
+        sort: 2,
+        icon: 'layui-icon-engine',
+        routePath: '/workspace/console',
+        compontPath: '/workspace/console',
+        isShow: '是'
+      },
+      {
+        id: '10012',
+        name: '分析页',
+        type: '菜单',
+        sort: 3,
+        icon: 'layui-icon-chart-screen',
+        routePath: '/workspace/analysis',
+        compontPath: '/workspace/analysis',
+        isShow: '是'
+      },
+      {
+        id: '10012',
+        name: '监控页',
+        type: '菜单',
+        sort: 4,
+        icon: 'layui-icon-find-fill',
+        routePath: '/workspace/monitor',
+        compontPath: '/workspace/monitor',
+        isShow: '是'
+      }
+    ]
+  }
+]
+
+const getCheckData6 = function () {
+  layer.msg(tableRef6.value.getCheckData())
+}
+
+const defaultExpandAll6 = ref(false)
+
+const expandAll6 = function (flag: any) {
+  defaultExpandAll6.value = flag
 }
 const model11 = ref({
   name: '',
-  role: '',
-  sex: '',
-  status: '',
-  account: ''
+  type: '',
+  sort: 0,
+  icon: '',
+  routePath: '',
+  compontPath: '',
+  isShow: '是'
 })
 const layFormRef11 = ref()
 const visible11 = ref(false)
+
 const title = ref('新增')
 const changeVisible11 = (text: any, row: any) => {
   title.value = text
@@ -523,10 +387,12 @@ const changeVisible11 = (text: any, row: any) => {
   } else {
     model11.value = {
       name: '',
-      role: '',
-      sex: '',
-      status: '',
-      account: ''
+      type: '',
+      sort: 0,
+      icon: '',
+      routePath: '',
+      compontPath: '',
+      isShow: '是'
     }
   }
   visible11.value = !visible11.value
@@ -544,7 +410,7 @@ const submit11 = function () {
       btn: [
         {
           text: '确认',
-          callback(index: any) {
+          callback(index: number) {
             layer.close(index)
           }
         }
@@ -562,10 +428,6 @@ const reset11 = function () {
   layFormRef11.value.reset()
 }
 function toRemove() {
-  if (selectedKeys.value.length == 0) {
-    layer.msg('您未选择数据，请先选择要删除的数据', { icon: 3, time: 2000 })
-    return
-  }
   layer.confirm('您将删除所有选中的数据？', {
     title: '提示',
     btn: [
@@ -589,76 +451,45 @@ function toRemove() {
 function toSubmit() {
   layer.msg('保存成功！', { icon: 1, time: 1000 })
   visible11.value = false
-  visible22.value = false
 }
 function toCancel() {
   visible11.value = false
-  visible22.value = false
 }
-function confirm() {
-  layer.msg('您已成功删除')
-}
-function cancel() {
-  layer.msg('您已取消操作')
-}
-
-const model22 = ref({
-  organization: '',
-  name: '',
-  fullName: '',
-  code: '',
-  type: '',
-  sort: 0,
-  remark: ''
-})
-const layFormRef22 = ref()
-const visible22 = ref(false)
-const title22 = ref('新建')
 </script>
 
 <style scoped>
-.organization-box {
-  width: calc(100vw - 240px);
+.menu-box {
+  width: calc(100vw - 220px);
   height: calc(100vh - 110px);
   margin-top: 10px;
   box-sizing: border-box;
-  background-color: #fff;
   overflow: hidden;
 }
-.left-tree {
-  display: inline-block;
-  padding: 20px 15px 0 5px;
-  height: 1200px;
-  border-right: 1px solid #e6e6e6;
-  box-sizing: border-box;
-  position: relative;
-}
-/* todo layui-tree-entry 设置无效 */
-.layui-tree-entry {
-  position: relative;
-  padding: 10px 0;
-  height: 20px;
-  line-height: 20px;
-  white-space: nowrap;
-}
-.isFold {
-  position: absolute;
-  top: 36%;
-  right: -10px;
-  width: 26px;
-  height: 26px;
-  line-height: 26px;
-  border-radius: 13px;
+.top-search {
+  margin-top: 10px;
+  padding: 10px;
+  height: 40px;
+  border-radius: 4px;
   background-color: #fff;
-  border: 1px solid #e6e6e6;
-  cursor: pointer;
 }
+.table-box {
+  margin-top: 10px;
+  padding: 10px;
+  height: 700px;
+  width: 100%;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
 .search-input {
   display: inline-block;
   width: 98%;
   margin-right: 10px;
 }
-
+.table-style {
+  margin-top: 10px;
+}
 .isChecked {
   display: inline-block;
   background-color: #e8f1ff;

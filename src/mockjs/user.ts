@@ -40,7 +40,7 @@ const menus = [
     title: '配置中心',
     children: [
       {
-        id: '/configs/tsmConfig',
+        id: '/configs/indicator',
         icon: "layui-icon-username",
         title: '指标管理',
       },

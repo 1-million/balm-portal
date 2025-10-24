@@ -8,6 +8,10 @@ export default [
     redirect: '/workSpace'
   },
   {
+    path: '/learn',
+    component: () => import('../../views/learn/index.vue'),
+  },
+  {
     path: '/login',
     component: Login,
     meta: { title: '登录页面' },
@@ -48,7 +52,7 @@ export default [
     children: [
       {
         //TimeSlotManager：直接体现“时段管理”功能
-        path: '/configs/tsmConfig',
+        path: '/configs/indicator',
         component: () => import('@/views/configs/indicator/index.vue'),
         meta: { title: '指标管理' },
       },
