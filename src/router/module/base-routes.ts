@@ -46,7 +46,7 @@ export default [
     ]
   },
   {
-    path: '/configs',
+    path: '/admin',
     component: BasicLayout,
     meta: { title: '配置中心' },
     children: [

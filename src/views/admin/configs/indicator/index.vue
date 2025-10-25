@@ -71,7 +71,7 @@
           >
           <lay-button
               size="sm"
-              @click="changeVisible11('新建', null)"
+              @click="changeVisible11('添加', null)"
               type="normal"
           >
             新建
@@ -83,9 +83,25 @@
           <lay-icon :class="row.icon"></lay-icon> &nbsp;&nbsp;
           {{ row.name }}
         </template>
+        <template #status="{ row }">
+          <div v-show="row.status == 0">
+            <lay-tag color="#165DFF" variant="light">停用</lay-tag>
+          </div>
+          <div v-show="row.status == 1">
+            <lay-tag color="#2dc570" variant="light">启用</lay-tag>
+          </div>
+        </template>
+        <template #type="{ row }">
+          <div v-show="row.type == 0">
+            <lay-tag color="#165DFF" variant="light">指标</lay-tag>
+          </div>
+          <div v-show="row.type == 1">
+            <lay-tag color="#2dc570" variant="light">步骤</lay-tag>
+          </div>
+        </template>
         <template #option="{ row }">
           <lay-button
-              @click="changeVisible11('新建', null)"
+              @click="changeVisible11('添加', row)"
               size="xs"
               border="blue"
               border-style="dashed"
@@ -109,68 +125,55 @@
             删除
           </lay-button>
         </template>
-        <template #status="{ row }">
-          <div v-show="row.status == 0">
-            <lay-tag color="#165DFF" variant="light">停用</lay-tag>
-          </div>
-          <div v-show="row.status == 1">
-            <lay-tag color="#2dc570" variant="light">启用</lay-tag>
-          </div>
-        </template>
-        <template #type="{ row }">
-          <div v-show="row.type == 0">
-            <lay-tag color="#165DFF" variant="light">指标</lay-tag>
-          </div>
-          <div v-show="row.type == 1">
-            <lay-tag color="#2dc570" variant="light">步骤</lay-tag>
-          </div>
-        </template>
       </lay-table>
     </div>
 
-    <lay-layer v-model="visible11" :title="title" :area="['700px', '370px']">
+    <lay-layer v-model="visible11" :title="title" :area="['700px', '430px']">
       <div style="padding: 20px">
-        <lay-form :model="model11" ref="layFormRef11" required>
+        <lay-form :model="indicator" ref="layFormRef11" required>
           <lay-row>
             <lay-col md="12">
+              <lay-form-item label="父级指标" prop="pId">
+                <lay-input v-model="indicator.pId"></lay-input>
+              </lay-form-item>
               <lay-form-item label="菜单名称" prop="name">
-                <lay-input v-model="model11.name"></lay-input>
+                <lay-input v-model="indicator.name"></lay-input>
               </lay-form-item>
-              <lay-form-item label="路由路径" prop="routePath">
-                <lay-input v-model="model11.routePath"></lay-input>
+              <lay-form-item label="开始日期" prop="startPeriod">
+                <lay-date-picker v-model="indicator.startPeriod"></lay-date-picker>
               </lay-form-item>
-              <lay-form-item label="组件路径" prop="compontPath">
-                <lay-input v-model="model11.compontPath"></lay-input>
+              <lay-form-item label="结束日期" prop="endPeriod">
+                <lay-date-picker v-model="indicator.endPeriod"></lay-date-picker>
               </lay-form-item>
-              <lay-form-item label="图标" prop="icon">
-                <lay-input v-model="model11.icon"></lay-input>
+              <lay-form-item label="状态" prop="status">
+                <lay-select v-model="indicator.status" style="width: 100%">
+                  <lay-select-option :value="0" label="停用"></lay-select-option>
+                  <lay-select-option :value="1" label="启用"></lay-select-option>
+                </lay-select>
               </lay-form-item>
             </lay-col>
             <lay-col md="12">
               <lay-form-item label="排序" prop="sort">
                 <lay-input-number
                     style="width: 100%"
-                    v-model="model11.sort"
+                    v-model="indicator.sortNo"
                     position="right"
                 ></lay-input-number>
               </lay-form-item>
-              <lay-form-item label="是否显示" prop="isShow">
-                <lay-select v-model="model11.isShow" style="width: 100%">
-                  <lay-select-option value="是" label="是"></lay-select-option>
-                  <lay-select-option value="否" label="否"></lay-select-option>
+              <lay-form-item label="类型" prop="type">
+                <lay-select v-model="indicator.type" style="width: 100%">
+                  <lay-select-option :value="0" label="指标"></lay-select-option>
+                  <lay-select-option :value="1" label="步骤"></lay-select-option>
                 </lay-select>
               </lay-form-item>
-
-              <lay-form-item label="类型" prop="type">
-                <lay-input v-model="model11.type"></lay-input>
+              <lay-form-item label="备注" prop="remark">
+                <lay-input v-model="indicator.remark"></lay-input>
               </lay-form-item>
             </lay-col>
           </lay-row>
         </lay-form>
-        <div style="width: 97%; text-align: right">
-          <lay-button size="sm" type="primary" @click="toSubmit"
-          >保存</lay-button
-          >
+        <div style="width: 97%; text-align: center">
+          <lay-button size="sm" type="primary" @click="toSubmit">保存</lay-button>
           <lay-button size="sm" @click="toCancel">取消</lay-button>
         </div>
       </div>
@@ -178,9 +181,12 @@
   </lay-container>
 </template>
 <script setup lang="ts">
-import {ref, reactive, onMounted} from 'vue'
-import { layer } from '@layui/layui-vue'
-import {api_getIndicatorTree, getIndicatorTree} from "@/api/module/indicator";
+import {onMounted, reactive, ref} from 'vue'
+import {layer} from '@layui/layui-vue'
+import {api_getIndicatorTree, api_saveOrUpdate} from '@/api/module/indicator';
+import moment from 'moment';
+import {login} from "@/api/module/user";
+
 const searchQuery = ref({
   address: '',
   identifying: '',
@@ -405,14 +411,16 @@ const defaultExpandAll6 = ref(false)
 const expandAll6 = function (flag: any) {
   defaultExpandAll6.value = flag
 }
-const model11 = ref({
-  name: '',
-  type: '',
-  sort: 0,
-  icon: '',
-  routePath: '',
-  compontPath: '',
-  isShow: '是'
+const indicator = ref({
+  "id": null,
+  "pId": null,
+  "sortNo": 1,
+  "startPeriod": moment().format('YYYY-MM-DD HH:mm:ss'),
+  "endPeriod": moment().format('YYYY-MM-DD HH:mm:ss'),
+  "name": null,
+  "status": 1,
+  "type": 0,
+  "remark": null
 })
 const layFormRef11 = ref()
 const visible11 = ref(false)
@@ -420,19 +428,21 @@ const visible11 = ref(false)
 const title = ref('新增')
 const changeVisible11 = (text: any, row: any) => {
   title.value = text
-  if (row != null) {
-    let info = JSON.parse(JSON.stringify(row))
-    model11.value = info
-  } else {
-    model11.value = {
-      name: '',
-      type: '',
-      sort: 0,
-      icon: '',
-      routePath: '',
-      compontPath: '',
-      isShow: '是'
+  if(text === "添加"){
+    indicator.value ={
+      "id": null,
+      "pId": row.id,
+      "sortNo": 1,
+      "startPeriod": moment().format('YYYY-MM-DD'),
+      "endPeriod": moment().format('YYYY-MM-DD'),
+      "name": null,
+      "status": 1,
+      "type": 0,
+      "remark": null
     }
+  }
+  if(text === "修改"){
+    indicator.value = JSON.parse(JSON.stringify(row))
   }
   visible11.value = !visible11.value
 }
@@ -488,8 +498,14 @@ function toRemove() {
   })
 }
 function toSubmit() {
-  layer.msg('保存成功！', { icon: 1, time: 1000 })
-  visible11.value = false
+  api_saveOrUpdate(JSON.parse(JSON.stringify(indicator.value))).then(({data,code,msg}) => {
+    if (code == 200) {
+      layer.msg('保存成功', { icon: 1 })
+      visible11.value = false
+    } else {
+      layer.msg(msg+","+data, { icon: 5 })
+    }
+  })
 }
 function toCancel() {
   visible11.value = false

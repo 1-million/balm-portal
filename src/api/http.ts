@@ -38,7 +38,7 @@ class Http {
             switch (response.data.code) {
                 case 200:
                     return response.data;
-                case 500:
+                case 9999:
                     return response.data;
                 case 99998:
                     layer.confirm(

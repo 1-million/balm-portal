@@ -35,7 +35,7 @@ const menus = [
     ]
   },
   {
-    id: '/configs',
+    id: '/admin',
     icon: "layui-icon-slider",
     title: '配置中心',
     children: [
