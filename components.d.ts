@@ -47,8 +47,12 @@ declare module '@vue/runtime-core' {
     LayTab: typeof import('@layui/layui-vue')['LayTab']
     LayTabItem: typeof import('@layui/layui-vue')['LayTabItem']
     LayTable: typeof import('@layui/layui-vue')['LayTable']
+    LayTabPane: typeof import('@layui/layui-vue')['LayTabPane']
+    LayTabs: typeof import('@layui/layui-vue')['LayTabs']
     LayTag: typeof import('@layui/layui-vue')['LayTag']
     LayTextarea: typeof import('@layui/layui-vue')['LayTextarea']
+    LayTimeline: typeof import('@layui/layui-vue')['LayTimeline']
+    LayTimelineItem: typeof import('@layui/layui-vue')['LayTimelineItem']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

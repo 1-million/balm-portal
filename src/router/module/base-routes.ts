@@ -1,5 +1,6 @@
 import BasicLayout from '../../layouts/BasicLayout.vue';
 import Login from '../../views/login/index.vue';
+import ClientLayout from "@/views/client/component/ClientLayout.vue";
 
 
 export default [
@@ -10,6 +11,18 @@ export default [
   {
     path: '/learn',
     component: () => import('../../views/learn/index.vue'),
+  },
+  {
+    path: '/client',
+    component: ClientLayout,
+    children: [
+      {
+        path: '/client/index',
+        name: 'index',
+        component: () => import('../../views/client/index.vue'),
+        meta: { title: '首页'},
+      }
+    ]
   },
   {
     path: '/login',
