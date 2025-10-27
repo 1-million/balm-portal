@@ -117,7 +117,7 @@
             修改
           </lay-button>
           <lay-button
-              @click="toRemove"
+              @click="toRemove(row)"
               size="xs"
               border="red"
               border-style="dashed"
@@ -140,10 +140,10 @@
                 <lay-input v-model="indicator.name"></lay-input>
               </lay-form-item>
               <lay-form-item label="开始日期" prop="startPeriod">
-                <lay-date-picker v-model="indicator.startPeriod"></lay-date-picker>
+                <lay-date-picker v-model="indicator.startPeriod" type="datetime"></lay-date-picker>
               </lay-form-item>
               <lay-form-item label="结束日期" prop="endPeriod">
-                <lay-date-picker v-model="indicator.endPeriod"></lay-date-picker>
+                <lay-date-picker v-model="indicator.endPeriod" type="datetime"></lay-date-picker>
               </lay-form-item>
               <lay-form-item label="状态" prop="status">
                 <lay-select v-model="indicator.status" style="width: 100%">
@@ -183,7 +183,7 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {api_getIndicatorTree, api_saveOrUpdate} from '@/api/module/indicator';
+import {api_delete, api_getIndicatorTree, api_saveOrUpdate} from '@/api/module/indicator';
 import moment from 'moment';
 import {login} from "@/api/module/user";
 
@@ -267,129 +267,7 @@ const columns6 = [
   }
 ]
 
-const dataSource7 = ref([
-  {
-    "id": 1,
-    "sortNo": 1,
-    "startPeriod": "2025-01-01 00:00:00",
-    "endPeriod": "2025-12-31 23:59:59",
-    "name": "年度指标",
-    "status": 1,
-    "type": 0,
-    "remark": null,
-    "createTime": "2025-10-20 10:20:02",
-    "children": [
-      {
-        "id": 4,
-        "sortNo": 1,
-        "startPeriod": "2025-01-01 00:00:00",
-        "endPeriod": "2025-12-31 23:59:59",
-        "name": "年度阅读",
-        "status": 1,
-        "type": 0,
-        "remark": null,
-        "createTime": "2025-10-20 10:20:44",
-        "pId": 1
-      }
-    ],
-    "pId": 0
-  },
-  {
-    "id": 2,
-    "sortNo": null,
-    "startPeriod": null,
-    "endPeriod": null,
-    "name": "突发指标",
-    "status": 1,
-    "type": 0,
-    "remark": null,
-    "createTime": "2025-10-21 14:27:10",
-    "children": [
-      {
-        "id": 3,
-        "sortNo": 1,
-        "startPeriod": "2025-01-01 00:00:00",
-        "endPeriod": "2025-02-28 23:59:59",
-        "name": "计算机基础",
-        "status": 1,
-        "type": 0,
-        "remark": null,
-        "createTime": "2025-10-20 10:21:20",
-        "children": [
-          {
-            "id": 13,
-            "sortNo": 1,
-            "startPeriod": "2025-09-24 00:31:56",
-            "endPeriod": "2025-10-01 00:31:56",
-            "name": "管浩辰2222",
-            "status": 0,
-            "type": 1,
-            "remark": "incididunt elit pariatur",
-            "createTime": "2025-10-23 17:48:48",
-            "pId": 3
-          }
-        ],
-        "pId": 2
-      }
-    ],
-    "pId": 0
-  }
-])
-
-const dataSource6 = [
-  {
-    id: '10001',
-    name: '工作空间',
-    type: '目录',
-    icon: 'layui-icon-home',
-    age: 0,
-    routePath: '/workspace',
-    compontPath: '',
-    isShow: '是',
-    children: [
-      {
-        id: '10009',
-        name: '工作台',
-        type: '菜单',
-        sort: 1,
-        icon: 'layui-icon-util',
-        routePath: '/workspace/workbench',
-        compontPath: '/workspace/workbench',
-        isShow: '是'
-      },
-      {
-        id: '10012',
-        name: '控制台',
-        type: '菜单',
-        sort: 2,
-        icon: 'layui-icon-engine',
-        routePath: '/workspace/console',
-        compontPath: '/workspace/console',
-        isShow: '是'
-      },
-      {
-        id: '10012',
-        name: '分析页',
-        type: '菜单',
-        sort: 3,
-        icon: 'layui-icon-chart-screen',
-        routePath: '/workspace/analysis',
-        compontPath: '/workspace/analysis',
-        isShow: '是'
-      },
-      {
-        id: '10012',
-        name: '监控页',
-        type: '菜单',
-        sort: 4,
-        icon: 'layui-icon-find-fill',
-        routePath: '/workspace/monitor',
-        compontPath: '/workspace/monitor',
-        isShow: '是'
-      }
-    ]
-  }
-]
+const dataSource7 = ref([])
 
 onMounted(() => {
   //加载表格数据
@@ -433,8 +311,8 @@ const changeVisible11 = (text: any, row: any) => {
       "id": null,
       "pId": row.id,
       "sortNo": 1,
-      "startPeriod": moment().format('YYYY-MM-DD'),
-      "endPeriod": moment().format('YYYY-MM-DD'),
+      "startPeriod": moment().format('YYYY-MM-DD HH:mm:ss'),
+      "endPeriod": moment().format('YYYY-MM-DD HH:mm:ss'),
       "name": null,
       "status": 1,
       "type": 0,
@@ -476,15 +354,21 @@ const clearValidate11 = function () {
 const reset11 = function () {
   layFormRef11.value.reset()
 }
-function toRemove() {
+function toRemove(row:any) {
   layer.confirm('您将删除所有选中的数据？', {
     title: '提示',
     btn: [
       {
         text: '确定',
         callback: (id: any) => {
-          layer.msg('您已成功删除')
-          layer.close(id)
+          api_delete(row.id).then(({data,code,msg}) => {
+            if (code == 200) {
+              layer.msg('您已成功删除')
+              layer.close(id)
+            } else {
+              layer.msg(msg+","+data, { icon: 5 })
+            }
+          })
         }
       },
       {
