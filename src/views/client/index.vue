@@ -25,7 +25,13 @@ import Statistics from "@/views/client/component/Statistics.vue";
   #left{
     background-color: #626872;
   }
-  #left .layui-card{
+  #left :deep(.layui-card){
     background-color: #626872;
+  }
+  #left :deep(h4){
+    color: white;
+  }
+  #left :deep(p){
+    color: white;
   }
 </style>
