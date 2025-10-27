@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     LayAvatar: typeof import('@layui/layui-vue')['LayAvatar']
-    LayBadge: typeof import('@layui/layui-vue')['LayBadge']
     LayBody: typeof import('@layui/layui-vue')['LayBody']
     LayBreadcrumb: typeof import('@layui/layui-vue')['LayBreadcrumb']
     LayBreadcrumbItem: typeof import('@layui/layui-vue')['LayBreadcrumbItem']
@@ -22,7 +21,6 @@ declare module '@vue/runtime-core' {
     LayDropdown: typeof import('@layui/layui-vue')['LayDropdown']
     LayDropdownMenu: typeof import('@layui/layui-vue')['LayDropdownMenu']
     LayDropdownMenuItem: typeof import('@layui/layui-vue')['LayDropdownMenuItem']
-    LayException: typeof import('@layui/layui-vue')['LayException']
     LayFooter: typeof import('@layui/layui-vue')['LayFooter']
     LayForm: typeof import('@layui/layui-vue')['LayForm']
     LayFormItem: typeof import('@layui/layui-vue')['LayFormItem']
@@ -37,6 +35,7 @@ declare module '@vue/runtime-core' {
     LayLogo: typeof import('@layui/layui-vue')['LayLogo']
     LayMenu: typeof import('@layui/layui-vue')['LayMenu']
     LayMenuItem: typeof import('@layui/layui-vue')['LayMenuItem']
+    LayPopconfirm: typeof import('@layui/layui-vue')['LayPopconfirm']
     LayQrcode: typeof import('@layui/layui-vue')['LayQrcode']
     LayRow: typeof import('@layui/layui-vue')['LayRow']
     LaySelect: typeof import('@layui/layui-vue')['LaySelect']
@@ -49,6 +48,7 @@ declare module '@vue/runtime-core' {
     LayTable: typeof import('@layui/layui-vue')['LayTable']
     LayTag: typeof import('@layui/layui-vue')['LayTag']
     LayTextarea: typeof import('@layui/layui-vue')['LayTextarea']
+    LayUpload: typeof import('@layui/layui-vue')['LayUpload']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
