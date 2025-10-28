@@ -2,6 +2,7 @@
 
 import TimeLine from "@/views/client/component/TimeLine.vue";
 import Statistics from "@/views/client/component/Statistics.vue";
+import TableTimeLine from "@/views/client/component/TableTimeLine.vue";
 </script>
 
 <template>
@@ -9,13 +10,14 @@ import Statistics from "@/views/client/component/Statistics.vue";
     <!-- 左侧时间轴 -->
     <lay-col md="12">
       <lay-card id="left" shadow="">
-        <TimeLine />
+<!--        <TimeLine />-->
+        <TableTimeLine/>
       </lay-card>
     </lay-col>
     <!-- 右侧统计数据 -->
     <lay-col md="12">
       <lay-card id="right" shadow="">
-        <Statistics />
+<!--        <Statistics />-->
       </lay-card>
     </lay-col>
   </lay-row>

@@ -128,7 +128,7 @@
       </lay-table>
     </div>
 
-    <lay-layer v-model="visible11" :title="title" :area="['700px', '430px']">
+    <lay-layer v-model="visible11" :title="title" :area="['700px', '430px']" :btn="action11">
       <div style="padding: 20px">
         <lay-form :model="indicator" ref="layFormRef11" required>
           <lay-row>
@@ -302,6 +302,21 @@ const indicator = ref({
 })
 const layFormRef11 = ref()
 const visible11 = ref(false)
+
+const action11 = ref([
+  {
+    text: "确认",
+    callback: () => {
+      layer.confirm("确认操作", { shade: false });
+    }
+  },
+  {
+    text: "取消",
+    callback: () => {
+      layer.confirm("取消操作", { shade: false });
+    }
+  }
+])
 
 const title = ref('新增')
 const changeVisible11 = (text: any, row: any) => {
