@@ -13,11 +13,11 @@ export default [
     component: () => import('../../views/learn/index.vue'),
   },
   {
-    path: '/client',
+    path: '/portal',
     component: ClientLayout,
     children: [
       {
-        path: '/client/index',
+        path: '/portal/index',
         name: 'index',
         component: () => import('../../views/client/index.vue'),
         meta: { title: '首页'},

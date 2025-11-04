@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import {layer} from "@layui/layer-vue";
+import {api_getTimeSlotListByPage} from "@/api/module/time-slot";
 
 //表格列数据
 const columns = ref([
@@ -23,40 +24,7 @@ const columns = ref([
 ])
 
 // 表格数据
-const tableData = ref<Array<any>>([
-  {
-    "id": 1,
-    "indicatorId": 3,
-    "indicatorName":"计算机基础",
-    "sortNo": 1,
-    "datePeriod": "2025-01-01",
-    "startTime": "2025-01-01 09:10:45",
-    "duration": 1800,
-    "endTime": null,
-    "predictThings": "计算机基础",
-    "actualThings": "睡觉",
-    "vimRate": 0.95,
-    "remark": null,
-    "createTime": "2025-10-20 10:29:17",
-    "status": 0
-  },
-  {
-    "id": 2,
-    "indicatorId": 3,
-    "indicatorName":"计算机基础",
-    "sortNo": 2,
-    "datePeriod": "2025-01-01",
-    "startTime": "2025-01-01 09:15:45",
-    "duration": 3600,
-    "endTime": null,
-    "predictThings": "计算机基础1",
-    "actualThings": "游戏",
-    "vimRate": 0.90,
-    "remark": null,
-    "createTime": "2025-10-20 10:39:17",
-    "status": 0
-  }
-]);
+const tableData = ref([]);
 // 表格高度（根据需求调整）
 const tableHeight = ref('100%');
 // 表格容器引用
@@ -64,7 +32,7 @@ const tableContainer = ref<HTMLElement | null>(null);
 // 当前页码
 let currentPage = 1;
 // 每页数据量
-const pageSize = 20;
+let pageSize = 20;
 // 是否正在加载
 let isLoading = false;
 
@@ -146,16 +114,18 @@ function loadData() {
 
   // 模拟 API 请求
   setTimeout(() => {
-    const newData = [];
-    for (let i = 0; i < pageSize; i++) {
-      newData.push({
-        id: (currentPage - 1) * pageSize + i + 1,
-        name: `用户${(currentPage - 1) * pageSize + i + 1}`,
-        age: Math.floor(Math.random() * 30) + 18,
-        address: `地址${(currentPage - 1) * pageSize + i + 1}`,
-      });
-    }
+    let newData;
+    api_getTimeSlotListByPage().then(({data,code,msg}) => {
+      if (code == 200) {
+        debugger
+        newData.push(data.records)
+      } else {
+        layer.msg(msg+","+data, { icon: 5 })
+      }
+    })
+    if (newData != undefined || newData != null){
     tableData.value = [...tableData.value, ...newData];
+    }
     currentPage++;
     isLoading = false;
   }, 500);
