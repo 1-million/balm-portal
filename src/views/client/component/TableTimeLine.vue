@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import {ref, onMounted, onUnmounted, reactive} from 'vue';
 import {layer} from "@layui/layer-vue";
 import {api_getTimeSlotListByPage, api_saveOrUpdate} from "@/api/module/time-slot";
 import moment from 'moment';
@@ -28,12 +28,7 @@ const columns = ref([
 const tableData = ref([]);
 // 表格高度（根据需求调整）
 const tableHeight = ref('100%');
-// 表格容器引用
-const tableContainer = ref<HTMLElement | null>(null);
-// 当前页码
-let currentPage = 1;
-// 每页数据量
-let pageSize = 20;
+const pageJson = reactive({ current: 1, limit: 1, total: 0 });
 // 是否正在加载
 let isLoading = false;
 
@@ -96,21 +91,26 @@ function submit() {
 function loadData() {
   if (isLoading) return;
   isLoading = true;
-
   // 模拟 API 请求
-  api_getTimeSlotListByPage({
-    params: {
-      page: currentPage,
-      size: pageSize,
-      datePeriod:'2025-01-01'
-    }}).then(({data,code,msg}) => {
+  api_getTimeSlotListByPage( {
+    current: pageJson.current,
+    size: pageJson.limit,
+    datePeriod:'2025-01-01'
+  }).then(({data,code,msg}) => {
     if (code == 200) {
       tableData.value = data.records;
+      pageJson.total = data.total;
     } else {
       layer.msg(msg+","+data, { icon: 5 });
     }
     isLoading = false;
   });
+}
+
+const change = (page:any) => {
+  pageJson.current = page.current;
+  pageJson.limit = page.limit;
+  loadData()
 }
 
 // 初始化
@@ -123,10 +123,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="table-container" ref="tableContainer">
+  <div class="table-container">
     <lay-table
         id="table"
         ref="refTable"
+        :page="pageJson"
+        @change="change"
         :loading="isLoading"
         :columns="columns"
         :data-source="tableData"
@@ -139,14 +141,6 @@ onMounted(() => {
         >
           新建
         </lay-button>
-      </template>
-      <template #pagination>
-        <lay-pagination
-            v-model="currentPage"
-            :total="100"
-            :limit="pageSize"
-            @change="loadData"
-        />
       </template>
       <template #record="{ row }">
         名称:{{row.name}}
@@ -172,30 +166,30 @@ onMounted(() => {
       <lay-container>
         <lay-row>
           <lay-col>
-            <lay-form ref="addFormRef" :model="newRecord">
+            <lay-form ref="addFormRef" :model="newJson">
             <lay-form-item label="指标名称" prop="indicatorName">
-              <lay-input v-model="newRecord.indicatorName" placeholder="请输入指标名称"></lay-input>
+              <lay-input v-model="newJson.indicatorName" placeholder="请输入指标名称"></lay-input>
             </lay-form-item>
             <lay-form-item label="所属日期" prop="datePeriod">
-              <lay-date-picker v-model="newRecord.datePeriod" placeholder="请选择所属日期"></lay-date-picker>
+              <lay-date-picker v-model="newJson.datePeriod" placeholder="请选择所属日期"></lay-date-picker>
             </lay-form-item>
             <lay-form-item label="开始时间" prop="startTime">
-              <lay-date-picker v-model="newRecord.startTime" placeholder="请选择开始时间"></lay-date-picker>
+              <lay-date-picker v-model="newJson.startTime" placeholder="请选择开始时间"></lay-date-picker>
             </lay-form-item>
             <lay-form-item label="持续时间（分钟）" prop="duration">
-              <lay-input-number v-model="newRecord.duration" :min="0" :step="10"></lay-input-number>
+              <lay-input-number v-model="newJson.duration" :min="0" :step="10"></lay-input-number>
             </lay-form-item>
             <lay-form-item label="预期事项" prop="predictThings">
-              <lay-input v-model="newRecord.predictThings" placeholder="请输入预期事项"></lay-input>
+              <lay-input v-model="newJson.predictThings" placeholder="请输入预期事项"></lay-input>
             </lay-form-item>
             <lay-form-item label="实际事项" prop="actualThings">
-              <lay-input v-model="newRecord.actualThings" placeholder="请输入实际事项"></lay-input>
+              <lay-input v-model="newJson.actualThings" placeholder="请输入实际事项"></lay-input>
             </lay-form-item>
             <lay-form-item label="满意率" prop="vimRate">
-              <lay-input-number v-model="newRecord.vimRate" :min="0" :max="1" :step="0.1"></lay-input-number>
+              <lay-input-number v-model="newJson.vimRate" :min="0" :max="1" :step="0.1"></lay-input-number>
             </lay-form-item>
             <lay-form-item label="备注" prop="remark">
-              <lay-input v-model="newRecord.remark" placeholder="请输入备注"></lay-input>
+              <lay-input v-model="newJson.remark" placeholder="请输入备注"></lay-input>
             </lay-form-item>
           </lay-form>
           </lay-col>
