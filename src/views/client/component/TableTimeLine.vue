@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import {layer} from "@layui/layer-vue";
-import {api_getTimeSlotListByPage} from "@/api/module/time-slot";
+import {api_getTimeSlotListByPage, api_saveOrUpdate} from "@/api/module/time-slot";
+import moment from 'moment';
 
 //表格列数据
 const columns = ref([
@@ -53,9 +54,21 @@ const action11 = ref([
     }
   }
 ]);
+const template = {
+  indicatorId: null, // 默认值
+  indicatorName: '',
+  datePeriod: moment().format('YYYY-MM-DD'),
+  startTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+  duration: 0,
+  predictThings: '',
+  actualThings: '',
+  vimRate: 0,
+  status: 0,
+  remark: "",
+}
 // 新增记录表单数据
-const newRecord = ref({
-  indicatorId: 3, // 默认值
+const newJson = ref({
+  indicatorId: null, // 默认值
   indicatorName: '',
   datePeriod: '',
   startTime: '',
@@ -68,100 +81,42 @@ const newRecord = ref({
 });
 
 // 提交新增记录
-function submitNewRecord() {
+function submit() {
   // 验证表单
-  if (!newRecord.value.indicatorName || !newRecord.value.datePeriod || !newRecord.value.startTime) {
+  if (!newJson.value.indicatorName || !newJson.value.datePeriod || !newJson.value.startTime) {
     alert('请填写必填字段');
     return;
   }
-
-  // 模拟提交到表格数据
-  tableData.value.unshift({
-    id: tableData.value.length + 1,
-    indicatorId: newRecord.value.indicatorId,
-    indicatorName: newRecord.value.indicatorName,
-    datePeriod: newRecord.value.datePeriod,
-    startTime: newRecord.value.startTime,
-    duration: newRecord.value.duration,
-    predictThings: newRecord.value.predictThings,
-    actualThings: newRecord.value.actualThings,
-    vimRate: newRecord.value.vimRate,
-    status: newRecord.value.status,
-    remark: newRecord.value.remark,
-    createTime: new Date().toISOString(),
-  });
-
+  api_saveOrUpdate(newJson.value)
   // 关闭弹窗并重置表单
   addDialogVisible.value = false;
-  newRecord.value = {
-    indicatorId: 3,
-    indicatorName: '',
-    datePeriod: '',
-    startTime: '',
-    duration: 0,
-    predictThings: '',
-    actualThings: '',
-    vimRate: 0,
-    status: 0,
-    remark: "",
-  };
 }
 
-// 模拟数据加载
+// 分页加载数据
 function loadData() {
   if (isLoading) return;
   isLoading = true;
 
   // 模拟 API 请求
-  setTimeout(() => {
-    let newData;
-    api_getTimeSlotListByPage().then(({data,code,msg}) => {
-      if (code == 200) {
-        debugger
-        newData.push(data.records)
-      } else {
-        layer.msg(msg+","+data, { icon: 5 })
-      }
-    })
-    if (newData != undefined || newData != null){
-    tableData.value = [...tableData.value, ...newData];
+  api_getTimeSlotListByPage({
+    params: {
+      page: currentPage,
+      size: pageSize,
+      datePeriod:'2025-01-01'
+    }}).then(({data,code,msg}) => {
+    if (code == 200) {
+      tableData.value = data.records;
+    } else {
+      layer.msg(msg+","+data, { icon: 5 });
     }
-    currentPage++;
     isLoading = false;
-  }, 500);
-}
-
-// 滚动事件监听
-function handleScroll() {
-  if (!tableContainer.value) return;
-
-  const container = tableContainer.value;
-  const scrollTop = container.scrollTop;
-  const scrollHeight = container.scrollHeight;
-  const clientHeight = container.clientHeight;
-
-  // 判断是否滚动到底部
-  if (scrollTop + clientHeight >= scrollHeight - 10) {
-    loadData();
-  }
+  });
 }
 
 // 初始化
 onMounted(() => {
   // 初始加载数据
   loadData();
-
-  // 添加滚动监听
-  if (tableContainer.value) {
-    tableContainer.value.addEventListener('scroll', handleScroll);
-  }
-});
-
-// 清理事件监听
-onUnmounted(() => {
-  if (tableContainer.value) {
-    tableContainer.value.removeEventListener('scroll', handleScroll);
-  }
 });
 
 
@@ -185,6 +140,14 @@ onUnmounted(() => {
           新建
         </lay-button>
       </template>
+      <template #pagination>
+        <lay-pagination
+            v-model="currentPage"
+            :total="100"
+            :limit="pageSize"
+            @change="loadData"
+        />
+      </template>
       <template #record="{ row }">
         名称:{{row.name}}
         时段:{{ row.startTime?row.startTime.substring(10):null }},
@@ -206,36 +169,38 @@ onUnmounted(() => {
       </template>
     </lay-table>
     <lay-layer v-model="addDialogVisible" title="新增记录" :area="['600px', '600px']" :btn="action11">
-      <lay-form ref="addFormRef" :model="newRecord">
-        <lay-form-item label="指标名称" prop="indicatorName">
-          <lay-input v-model="newRecord.indicatorName" placeholder="请输入指标名称"></lay-input>
-        </lay-form-item>
-        <lay-form-item label="日期" prop="datePeriod">
-          <lay-date-picker v-model="newRecord.datePeriod" placeholder="请选择日期"></lay-date-picker>
-        </lay-form-item>
-        <lay-form-item label="开始时间" prop="startTime">
-          <lay-date-picker v-model="newRecord.startTime" placeholder="请选择开始时间"></lay-date-picker>
-        </lay-form-item>
-        <lay-form-item label="持续时间（分钟）" prop="duration">
-          <lay-input-number v-model="newRecord.duration" :min="0" :step="10"></lay-input-number>
-        </lay-form-item>
-        <lay-form-item label="预期事项" prop="predictThings">
-          <lay-input v-model="newRecord.predictThings" placeholder="请输入预期事项"></lay-input>
-        </lay-form-item>
-        <lay-form-item label="实际事项" prop="actualThings">
-          <lay-input v-model="newRecord.actualThings" placeholder="请输入实际事项"></lay-input>
-        </lay-form-item>
-        <lay-form-item label="精力率" prop="vimRate">
-          <lay-input-number v-model="newRecord.vimRate" :min="0" :max="1" :step="0.05"></lay-input-number>
-        </lay-form-item>
-        <lay-form-item label="备注" prop="remark">
-          <lay-input v-model="newRecord.remark" placeholder="请输入备注"></lay-input>
-        </lay-form-item>
-      </lay-form>
-      <template #footer>
-        <lay-button @click="addDialogVisible = false">取消</lay-button>
-        <lay-button type="primary" @click="submitNewRecord">提交</lay-button>
-      </template>
+      <lay-container>
+        <lay-row>
+          <lay-col>
+            <lay-form ref="addFormRef" :model="newRecord">
+            <lay-form-item label="指标名称" prop="indicatorName">
+              <lay-input v-model="newRecord.indicatorName" placeholder="请输入指标名称"></lay-input>
+            </lay-form-item>
+            <lay-form-item label="所属日期" prop="datePeriod">
+              <lay-date-picker v-model="newRecord.datePeriod" placeholder="请选择所属日期"></lay-date-picker>
+            </lay-form-item>
+            <lay-form-item label="开始时间" prop="startTime">
+              <lay-date-picker v-model="newRecord.startTime" placeholder="请选择开始时间"></lay-date-picker>
+            </lay-form-item>
+            <lay-form-item label="持续时间（分钟）" prop="duration">
+              <lay-input-number v-model="newRecord.duration" :min="0" :step="10"></lay-input-number>
+            </lay-form-item>
+            <lay-form-item label="预期事项" prop="predictThings">
+              <lay-input v-model="newRecord.predictThings" placeholder="请输入预期事项"></lay-input>
+            </lay-form-item>
+            <lay-form-item label="实际事项" prop="actualThings">
+              <lay-input v-model="newRecord.actualThings" placeholder="请输入实际事项"></lay-input>
+            </lay-form-item>
+            <lay-form-item label="满意率" prop="vimRate">
+              <lay-input-number v-model="newRecord.vimRate" :min="0" :max="1" :step="0.1"></lay-input-number>
+            </lay-form-item>
+            <lay-form-item label="备注" prop="remark">
+              <lay-input v-model="newRecord.remark" placeholder="请输入备注"></lay-input>
+            </lay-form-item>
+          </lay-form>
+          </lay-col>
+        </lay-row>
+      </lay-container>
     </lay-layer>
   </div>
 </template>

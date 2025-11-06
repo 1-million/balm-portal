@@ -1,7 +1,7 @@
 import Http from '../http';
 
-export const api_getTimeSlotListByPage = function() {
-    return Http.get('/tsm/timeSlot/getTimeSlotListByPage')
+export const api_getTimeSlotListByPage = function(param:any) {
+    return Http.get('/tsm/timeSlot/getTimeSlotListByPage',param)
 }
 export const api_saveOrUpdate = function(indicator:any) {
     return Http.post('/tsm/indicator/saveOrUpdate',indicator)
