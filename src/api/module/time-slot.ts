@@ -7,5 +7,5 @@ export const api_saveOrUpdate = function(indicator:any) {
     return Http.post('/tsm/timeSlot/saveOrUpdate',indicator)
 }
 export const api_delete = function(id:any) {
-    return Http.delete('/tsm/indicator/delete',{id:id})
+    return Http.delete('/tsm/timeSlot/delete',{id:id})
 }

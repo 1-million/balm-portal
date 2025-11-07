@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref, onMounted, onUnmounted, reactive} from 'vue';
 import {layer} from "@layui/layer-vue";
-import {api_getTimeSlotListByPage, api_saveOrUpdate} from "@/api/module/time-slot";
+import {api_getTimeSlotListByPage, api_saveOrUpdate, api_delete} from "@/api/module/time-slot";
 import moment from 'moment';
 import {api_getIndicatorTree} from "@/api/module/indicator";
 
@@ -19,7 +19,7 @@ const columns = ref([
   },
   {
     title: '操作',
-    width: '50px',
+    width: '100px',
     key: 'option',
     customSlot: 'option'
   }
@@ -29,13 +29,15 @@ const columns = ref([
 const tableData = ref([]);
 // 表格高度（根据需求调整）
 const tableHeight = ref('100%');
-const pageJson = reactive({ current: 1, limit: 1, total: 0 });
+const pageJson = reactive({ current: 1, limit: 50, total: 0 });
 // 是否正在加载
 let isLoading = false;
 
 // 新增记录弹窗状态
 const addDialogVisible = ref(false);
+const editDialogVisible = ref(false);
 const addFormRef = ref();
+const editFormRef = ref();
 const action11 = ref([
   {
     text: "确认",
@@ -78,20 +80,26 @@ const newJson = ref({
   duration: 0,
   predictThings: '',
   actualThings: '',
-  vimRate: 0,
+  vimRate: 1,
   status: 0,
   remark: "",
 });
 
 const datePeriod = ref(moment().format('YYYY-MM-DD'))
 
-function showAddTimeSlot(){
+function showAddTimeSlot(row:any){
+  const getIndicatorTree = async ()=>{
+    await api_getIndicatorTree().then(({ data }) => {
+      treeData.value = data;
+    });
+  }
+  if(row){
+    newJson.value = {...row}
+  }else{
+    newJson.value = {...template};
+  }
+  getIndicatorTree()
   addDialogVisible.value = true;
-  newJson.value = {...template};
-  // 调用接口获取树形数据
-  api_getIndicatorTree().then(({ data }) => {
-    treeData.value = data;
-  });
 }
 
 // 提交新增记录
@@ -101,17 +109,16 @@ function submit() {
   //   alert('请填写必填字段');
   //   return;
   // }
-  debugger
   api_saveOrUpdate(newJson.value).then(({data,code,msg}) => {
     if(code == 200){
       layer.msg(msg, { icon: 1 });
       addDialogVisible.value = false;
+      loadData();
     }else{
       layer.msg(msg+","+data, { icon: 5 });
     }
   })
 }
-
 // 分页加载数据
 function loadData() {
   if (isLoading) return;
@@ -138,6 +145,34 @@ const change = (page:any) => {
   loadData()
 }
 
+function remove(row:any){
+  layer.confirm('您将删除所有选中的数据？', {
+    title: '提示',
+    btn: [
+      {
+        text: '确定',
+        callback: (id: any) => {
+          api_delete(row.id).then(({data,code,msg}) => {
+            if (code == 200) {
+              layer.msg('您已成功删除')
+              layer.close(id)
+            } else {
+              layer.msg(msg+","+data, { icon: 5 })
+            }
+          })
+        }
+      },
+      {
+        text: '取消',
+        callback: (id: any) => {
+          layer.msg('您已取消操作')
+          layer.close(id)
+        }
+      }
+    ]
+  })
+}
+
 // 初始化
 onMounted(() => {
   // 初始加载数据
@@ -162,7 +197,7 @@ onMounted(() => {
         <lay-button
             size="sm"
             type="normal"
-            @click="showAddTimeSlot"
+            @click="showAddTimeSlot(null)"
         >
           新建
         </lay-button>
@@ -182,8 +217,17 @@ onMounted(() => {
             size="xs"
             border="green"
             border-style="dashed"
+            @click="showAddTimeSlot(row)"
         >
           修改
+        </lay-button>
+        <lay-button
+            @click="remove(row)"
+            size="xs"
+            border="red"
+            border-style="dashed"
+        >
+          删除
         </lay-button>
       </template>
     </lay-table>
