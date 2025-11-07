@@ -24,12 +24,12 @@ import TableTimeLine from "@/views/client/component/TableTimeLine.vue";
 </template>
 
 <style scoped>
-  #left{
+  /*#left{
     background-color: #626872;
-  }
-  #left :deep(.layui-card){
+  }*/
+/*  #left :deep(.layui-card){
     background-color: #626872;
-  }
+  }*/
   #left :deep(h4){
     color: white;
   }
