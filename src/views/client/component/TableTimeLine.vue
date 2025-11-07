@@ -3,6 +3,7 @@ import {ref, onMounted, onUnmounted, reactive} from 'vue';
 import {layer} from "@layui/layer-vue";
 import {api_getTimeSlotListByPage, api_saveOrUpdate} from "@/api/module/time-slot";
 import moment from 'moment';
+import {api_getIndicatorTree} from "@/api/module/indicator";
 
 //表格列数据
 const columns = ref([
@@ -39,7 +40,7 @@ const action11 = ref([
   {
     text: "确认",
     callback: () => {
-      layer.confirm("确认操作", { shade: false });
+      submit()
     }
   },
   {
@@ -54,14 +55,21 @@ const template = {
   indicatorName: '',
   datePeriod: moment().format('YYYY-MM-DD'),
   startTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-  duration: 0,
+  duration: 30,
   predictThings: '',
   actualThings: '',
-  vimRate: 0,
+  vimRate: 1,
   status: 0,
   remark: "",
 }
 // 新增记录表单数据
+const treeData = ref([]);
+const replaceFields = {
+  key: 'id',
+  title: 'name',
+  field:"id",
+  children: 'children'
+};
 const newJson = ref({
   indicatorId: null, // 默认值
   indicatorName: '',
@@ -75,16 +83,33 @@ const newJson = ref({
   remark: "",
 });
 
+const datePeriod = ref(moment().format('YYYY-MM-DD'))
+
+function showAddTimeSlot(){
+  addDialogVisible.value = true;
+  newJson.value = {...template};
+  // 调用接口获取树形数据
+  api_getIndicatorTree().then(({ data }) => {
+    treeData.value = data;
+  });
+}
+
 // 提交新增记录
 function submit() {
   // 验证表单
-  if (!newJson.value.indicatorName || !newJson.value.datePeriod || !newJson.value.startTime) {
-    alert('请填写必填字段');
-    return;
-  }
-  api_saveOrUpdate(newJson.value)
-  // 关闭弹窗并重置表单
-  addDialogVisible.value = false;
+  // if (!newJson.value.indicatorName || !newJson.value.datePeriod || !newJson.value.startTime) {
+  //   alert('请填写必填字段');
+  //   return;
+  // }
+  debugger
+  api_saveOrUpdate(newJson.value).then(({data,code,msg}) => {
+    if(code == 200){
+      layer.msg(msg, { icon: 1 });
+      addDialogVisible.value = false;
+    }else{
+      layer.msg(msg+","+data, { icon: 5 });
+    }
+  })
 }
 
 // 分页加载数据
@@ -95,7 +120,7 @@ function loadData() {
   api_getTimeSlotListByPage( {
     current: pageJson.current,
     size: pageJson.limit,
-    datePeriod:'2025-01-01'
+    datePeriod:datePeriod.value
   }).then(({data,code,msg}) => {
     if (code == 200) {
       tableData.value = data.records;
@@ -137,7 +162,7 @@ onMounted(() => {
         <lay-button
             size="sm"
             type="normal"
-            @click="()=>{addDialogVisible = true}"
+            @click="showAddTimeSlot"
         >
           新建
         </lay-button>
@@ -149,7 +174,7 @@ onMounted(() => {
         实际:{{ row.actualThings }},
         时长:{{ row.duration }}
         精力率:{{ row.vimRate }}
-        状态:{{ row.status == 0 ? '进行中' : '已完成' }}
+        状态:{{ row.status == 0 ? '计划' : row.stat6us == 1?'进行中':'已完成' }}
         备注:{{ row.remark }}
       </template>
       <template #option="{ row }">
@@ -168,13 +193,13 @@ onMounted(() => {
           <lay-col>
             <lay-form ref="addFormRef" :model="newJson">
             <lay-form-item label="指标名称" prop="indicatorName">
-              <lay-input v-model="newJson.indicatorName" placeholder="请输入指标名称"></lay-input>
+              <lay-tree-select v-model="newJson.indicatorId" placeholder="请选择指标名称" :data="treeData" :replaceFields="replaceFields" :default-expand-all="true" ></lay-tree-select>
             </lay-form-item>
             <lay-form-item label="所属日期" prop="datePeriod">
               <lay-date-picker v-model="newJson.datePeriod" placeholder="请选择所属日期"></lay-date-picker>
             </lay-form-item>
             <lay-form-item label="开始时间" prop="startTime">
-              <lay-date-picker v-model="newJson.startTime" placeholder="请选择开始时间"></lay-date-picker>
+              <lay-date-picker  v-model="newJson.startTime" placeholder="请选择开始时间" type="datetime"></lay-date-picker>
             </lay-form-item>
             <lay-form-item label="持续时间（分钟）" prop="duration">
               <lay-input-number v-model="newJson.duration" :min="0" :step="10"></lay-input-number>
