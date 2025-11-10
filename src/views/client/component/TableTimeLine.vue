@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {ref, onMounted, onUnmounted, reactive} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import {layer} from "@layui/layer-vue";
-import {api_getTimeSlotListByPage, api_saveOrUpdate, api_delete} from "@/api/module/time-slot";
+import {api_delete, api_getTimeSlotListByPage, api_saveOrUpdate} from "@/api/module/time-slot";
 import moment from 'moment';
 import {api_getIndicatorTree} from "@/api/module/indicator";
 
@@ -57,6 +57,7 @@ const template = {
   indicatorName: '',
   datePeriod: moment().format('YYYY-MM-DD'),
   startTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+  endTime: moment().format('YYYY-MM-DD HH:mm:ss'),
   duration: 30,
   predictThings: '',
   actualThings: '',
@@ -77,6 +78,7 @@ const newJson = ref({
   indicatorName: '',
   datePeriod: '',
   startTime: '',
+  endTime: '',
   duration: 0,
   predictThings: '',
   actualThings: '',
@@ -89,7 +91,7 @@ const datePeriod = ref(moment().format('YYYY-MM-DD'))
 
 function showAddTimeSlot(row:any){
   const getIndicatorTree = async ()=>{
-    await api_getIndicatorTree().then(({ data }) => {
+    await api_getIndicatorTree({"id":0,"statues":[0,1]}).then(({ data }) => {
       treeData.value = data;
     });
   }
@@ -245,6 +247,9 @@ onMounted(() => {
             <lay-form-item label="开始时间" prop="startTime">
               <lay-date-picker  v-model="newJson.startTime" placeholder="请选择开始时间" type="datetime"></lay-date-picker>
             </lay-form-item>
+            <lay-form-item label="结束时间" prop="startTime">
+              <lay-date-picker  v-model="newJson.endTime" placeholder="请选择结束时间" type="datetime"></lay-date-picker>
+            </lay-form-item>
             <lay-form-item label="持续时间（分钟）" prop="duration">
               <lay-input-number v-model="newJson.duration" :min="0" :step="10"></lay-input-number>
             </lay-form-item>
@@ -256,6 +261,14 @@ onMounted(() => {
             </lay-form-item>
             <lay-form-item label="满意率" prop="vimRate">
               <lay-input-number v-model="newJson.vimRate" :min="0" :max="1" :step="0.1"></lay-input-number>
+            </lay-form-item>
+            <lay-form-item label="状态" prop="status">
+              <lay-select v-model="newJson.status">
+                <lay-select-option :value="0" label="计划"></lay-select-option>
+                <lay-select-option :value="1" label="进行中"></lay-select-option>
+                <lay-select-option :value="2" label="完成"></lay-select-option>
+                <lay-select-option :value="3" label="非预期"></lay-select-option>
+              </lay-select>
             </lay-form-item>
             <lay-form-item label="备注" prop="remark">
               <lay-input v-model="newJson.remark" placeholder="请输入备注"></lay-input>

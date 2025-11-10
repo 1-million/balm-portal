@@ -272,7 +272,7 @@ const dataSource7 = ref([])
 onMounted(() => {
   //加载表格数据
   const getIndicatorTree = async ()=>{
-    let {data,code,msg} = await api_getIndicatorTree()
+    let {data,code,msg} = await api_getIndicatorTree({"id":0,"statues":[1,2,3,4]})
     if(code == 200){
       dataSource7.value = data
     }
