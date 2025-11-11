@@ -217,12 +217,11 @@ function doQuery(){
       </template>
       <template #record="{ row }">
         <lay-space size="md">
-          <lay-tag>{{ row.startTime?row.startTime.substring(10):null }}</lay-tag>
-          <lay-tag>{{ row.endTime?row.endTime.substring(10):null }}</lay-tag>
+          <lay-tag>{{(row.startTime?row.startTime.substring(10):null) + '~' + (row.endTime?row.endTime.substring(10):null)}}</lay-tag>
           <lay-tag>{{row.predictThings}}</lay-tag>
           <lay-tag>{{row.actualThings}}</lay-tag>
           <lay-tag>{{row.vimRate * 100 + '%'}}</lay-tag>
-          <lay-tag>{{ row.status == 0 ? '计划' : row.stat6us == 1?'进行中':'已完成' }}</lay-tag>
+          <lay-tag>{{ row.status == 0 ? '计划' : row.status == 1?'进行中':'已完成' }}</lay-tag>
         </lay-space>
       </template>
       <template #option="{ row }">
