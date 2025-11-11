@@ -33,6 +33,10 @@ const pageJson = reactive({ current: 1, limit: 50, total: 0 });
 // 是否正在加载
 let isLoading = false;
 
+const queryParam = reactive({
+  datePeriod: moment().format('YYYY-MM-DD')
+})
+
 // 新增记录弹窗状态
 const addDialogVisible = ref(false);
 const editDialogVisible = ref(false);
@@ -129,7 +133,7 @@ function loadData() {
   api_getTimeSlotListByPage( {
     current: pageJson.current,
     size: pageJson.limit,
-    datePeriod:datePeriod.value
+    datePeriod:queryParam.datePeriod
   }).then(({data,code,msg}) => {
     if (code == 200) {
       tableData.value = data.records;
@@ -181,6 +185,9 @@ onMounted(() => {
   loadData();
 });
 
+function doQuery(){
+  loadData()
+}
 
 </script>
 
@@ -196,23 +203,27 @@ onMounted(() => {
         :data-source="tableData"
         :data="tableData" :height="tableHeight">
       <template #toolbar>
-        <lay-button
-            size="sm"
-            type="normal"
-            @click="showAddTimeSlot(null)"
-        >
-          新建
-        </lay-button>
+        <lay-form>
+          <lay-form-item label="" mode="inline">
+            <lay-button size="sm" type="normal" @click="showAddTimeSlot(null)">新建</lay-button>
+          </lay-form-item>
+          <lay-form-item label="日期" mode="inline">
+            <lay-date-picker  v-model="queryParam.datePeriod" placeholder="请选择开始时间"></lay-date-picker>
+          </lay-form-item>
+          <lay-form-item label="" mode="inline">
+            <lay-button size="sm" type="normal" @click="doQuery()">查询</lay-button>
+          </lay-form-item>
+        </lay-form>
       </template>
       <template #record="{ row }">
-        名称:{{row.name}}
-        时段:{{ row.startTime?row.startTime.substring(10):null }},
-        预期:{{ row.predictThings }},
-        实际:{{ row.actualThings }},
-        时长:{{ row.duration }}
-        精力率:{{ row.vimRate }}
-        状态:{{ row.status == 0 ? '计划' : row.stat6us == 1?'进行中':'已完成' }}
-        备注:{{ row.remark }}
+        <lay-space size="md">
+          <lay-tag>{{ row.startTime?row.startTime.substring(10):null }}</lay-tag>
+          <lay-tag>{{ row.endTime?row.endTime.substring(10):null }}</lay-tag>
+          <lay-tag>{{row.predictThings}}</lay-tag>
+          <lay-tag>{{row.actualThings}}</lay-tag>
+          <lay-tag>{{row.vimRate * 100 + '%'}}</lay-tag>
+          <lay-tag>{{ row.status == 0 ? '计划' : row.stat6us == 1?'进行中':'已完成' }}</lay-tag>
+        </lay-space>
       </template>
       <template #option="{ row }">
         <lay-button
@@ -250,9 +261,9 @@ onMounted(() => {
             <lay-form-item label="结束时间" prop="startTime">
               <lay-date-picker  v-model="newJson.endTime" placeholder="请选择结束时间" type="datetime"></lay-date-picker>
             </lay-form-item>
-            <lay-form-item label="持续时间（分钟）" prop="duration">
+<!--            <lay-form-item label="持续时间（分钟）" prop="duration">
               <lay-input-number v-model="newJson.duration" :min="0" :step="10"></lay-input-number>
-            </lay-form-item>
+            </lay-form-item>-->
             <lay-form-item label="预期事项" prop="predictThings">
               <lay-input v-model="newJson.predictThings" placeholder="请输入预期事项"></lay-input>
             </lay-form-item>

@@ -12,7 +12,7 @@ export default defineConfig({
     proxy: {
       // 代理规则示例
       '/api': {
-        target: 'http://localhost:9999/api', // 后端服务器地址
+        target: 'http://111.228.34.65:9999/api', // 后端服务器地址
         changeOrigin: true, // 改变请求头中的host为目标服务器的host
         rewrite: (path) => path.replace(/^\/api/, '') // 重写路径
       },
