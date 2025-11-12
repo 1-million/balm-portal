@@ -57,7 +57,7 @@ const action11 = ref([
   }
 ]);
 const template = {
-  indicatorId: null, // 默认值
+  predictIndicatorId: null, // 默认值
   indicatorName: '',
   datePeriod: moment().format('YYYY-MM-DD'),
   startTime: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -78,7 +78,7 @@ const replaceFields = {
   children: 'children'
 };
 const newJson = ref({
-  indicatorId: null, // 默认值
+  predictIndicatorId: null, // 默认值
   indicatorName: '',
   datePeriod: '',
   startTime: '',
@@ -248,9 +248,6 @@ function doQuery(){
         <lay-row>
           <lay-col>
             <lay-form ref="addFormRef" :model="newJson">
-            <lay-form-item label="指标名称" prop="indicatorName">
-              <lay-tree-select v-model="newJson.indicatorId" placeholder="请选择指标名称" :data="treeData" :replaceFields="replaceFields" :default-expand-all="true" ></lay-tree-select>
-            </lay-form-item>
             <lay-form-item label="所属日期" prop="datePeriod">
               <lay-date-picker v-model="newJson.datePeriod" placeholder="请选择所属日期"></lay-date-picker>
             </lay-form-item>
@@ -263,6 +260,9 @@ function doQuery(){
 <!--            <lay-form-item label="持续时间（分钟）" prop="duration">
               <lay-input-number v-model="newJson.duration" :min="0" :step="10"></lay-input-number>
             </lay-form-item>-->
+            <lay-form-item label="指标名称" prop="indicatorName">
+              <lay-tree-select v-model="newJson.predictIndicatorId" placeholder="请选择指标名称" :data="treeData" :replaceFields="replaceFields" :default-expand-all="true" ></lay-tree-select>
+            </lay-form-item>
             <lay-form-item label="预期事项" prop="predictThings">
               <lay-input v-model="newJson.predictThings" placeholder="请输入预期事项"></lay-input>
             </lay-form-item>
@@ -293,7 +293,6 @@ function doQuery(){
 
 <style scoped>
   .table-container {
-    height: 500px; /* 根据需求调整高度 */
     overflow-y: auto;
     border: 1px solid #e6e6e6;
   }

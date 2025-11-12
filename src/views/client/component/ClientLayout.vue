@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <lay-container fluid>
+  <lay-container :fluid="true">
     <lay-layout class="client">
       <lay-header>header</lay-header>
       <lay-body>
