@@ -27,6 +27,7 @@ const columns = ref([
 
 // 表格数据
 const tableData = ref([]);
+const items = ref([])
 // 表格高度（根据需求调整）
 const tableHeight = ref('100%');
 const pageJson = reactive({ current: 1, limit: 50, total: 0 });
@@ -58,7 +59,7 @@ const action11 = ref([
 ]);
 const template = {
   predictIndicatorId: null, // 默认值
-  indicatorName: '',
+  actualIndicatorId: null,
   datePeriod: moment().format('YYYY-MM-DD'),
   startTime: moment().format('YYYY-MM-DD HH:mm:ss'),
   endTime: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -80,7 +81,6 @@ const replaceFields = {
 const newJson = ref({
   predictIndicatorId: null, // 默认值
   actualIndicatorId: null, // 默认值
-  indicatorName: '',
   datePeriod: '',
   startTime: '',
   endTime: '',
@@ -106,6 +106,7 @@ function showAddTimeSlot(row:any){
     newJson.value = {...template};
   }
   getIndicatorTree()
+  loadItems()
   addDialogVisible.value = true;
 }
 
@@ -180,6 +181,25 @@ function remove(row:any){
   })
 }
 
+
+
+function loadItems() {
+  api_getTimeSlotListByPage( {
+    current: 0,
+    size: 100,
+    datePeriod:queryParam.datePeriod
+  }).then(({data,code,msg}) => {
+    if (code == 200) {
+      items.value = data.records.map((item:any)=>{
+        return {"label":item.endTime,"value":item.endTime}
+      });
+    } else {
+      layer.msg(msg+","+data, { icon: 5 });
+    }
+    isLoading = false;
+  });
+}
+
 // 初始化
 onMounted(() => {
   // 初始加载数据
@@ -188,6 +208,12 @@ onMounted(() => {
 
 function doQuery(){
   loadData()
+}
+
+function preItemChange(value:any){
+  console.log(value)
+  newJson.value.startTime = moment(value).add(1, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+  newJson.value.endTime = moment(value).add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss')
 }
 
 </script>
@@ -249,6 +275,9 @@ function doQuery(){
         <lay-row>
           <lay-col>
             <lay-form ref="addFormRef" :model="newJson">
+            <lay-form-item label="上条时段">
+              <lay-select placeholder="请选择时段记录" :options="items" @change="preItemChange"></lay-select>
+            </lay-form-item>
             <lay-form-item label="所属日期" prop="datePeriod">
               <lay-date-picker v-model="newJson.datePeriod" placeholder="请选择所属日期"></lay-date-picker>
             </lay-form-item>
@@ -258,9 +287,6 @@ function doQuery(){
             <lay-form-item label="结束时间" prop="startTime">
               <lay-date-picker  v-model="newJson.endTime" placeholder="请选择结束时间" type="datetime"></lay-date-picker>
             </lay-form-item>
-<!--            <lay-form-item label="持续时间（分钟）" prop="duration">
-              <lay-input-number v-model="newJson.duration" :min="0" :step="10"></lay-input-number>
-            </lay-form-item>-->
             <lay-form-item label="指标名称" prop="predictIndicatorId">
               <lay-tree-select v-model="newJson.predictIndicatorId" placeholder="请选择指标名称" :data="treeData" :replaceFields="replaceFields" :default-expand-all="true" ></lay-tree-select>
             </lay-form-item>
