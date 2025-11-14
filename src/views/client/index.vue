@@ -9,7 +9,7 @@ import TableTimeLine from "@/views/client/component/TableTimeLine.vue";
   <lay-row >
     <!-- 左侧时间轴 -->
     <lay-col md="24">
-      <lay-card id="left" shadow="">
+      <lay-card id="left">
 <!--        <TimeLine />-->
         <TableTimeLine/>
       </lay-card>

@@ -232,7 +232,7 @@
           <lay-col :md="24">
             <lay-card>
               <template #title> 产品动态 </template>
-              <a class="news">官网文档</a>
+              <router-link to="/portal/index" class="news">官网文档</router-link>
             </lay-card>
           </lay-col>
         </lay-row>

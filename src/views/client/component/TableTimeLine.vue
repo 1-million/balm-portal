@@ -14,10 +14,6 @@ const columns = ref([
     title: '选择'
   },
   {
-    title: 'Id',
-    key: 'id',
-  },
-  {
     title: '时段记录',
     key: 'more',
     customSlot: 'record'
