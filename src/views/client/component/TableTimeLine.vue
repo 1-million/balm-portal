@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from 'vue';
 import {layer} from "@layui/layer-vue";
-import {api_delete, api_getTimeSlotListByPage, api_saveOrUpdate} from "@/api/module/time-slot";
+import {api_delete, api_getTimeSlotListByPage, api_saveOrUpdate, api_updateBatch} from "@/api/module/time-slot";
 import moment from 'moment';
 import {api_getIndicatorTree} from "@/api/module/indicator";
 
+const refTable = ref();
 //表格列数据
 const columns = ref([
-  // {
-  //   fixed: 'left',
-  //   type: 'checkbox',
-  //   title: '选择'
-  // },
+  {
+    fixed: 'left',
+    type: 'checkbox',
+    title: '选择'
+  },
+  {
+    title: 'Id',
+    key: 'id',
+  },
   {
     title: '时段记录',
-    key: 'id',
+    key: 'more',
     customSlot: 'record'
   },
   {
@@ -40,7 +45,7 @@ const queryParam = reactive({
 
 // 新增记录弹窗状态
 const addDialogVisible = ref(false);
-const editDialogVisible = ref(false);
+const batchUpdateDialogVisible = ref(false);
 const addFormRef = ref();
 const editFormRef = ref();
 const action11 = ref([
@@ -54,6 +59,22 @@ const action11 = ref([
     text: "取消",
     callback: () => {
       addDialogVisible.value = false;
+    }
+  }
+]);
+
+const batchUpdateButtons = ref([
+  {
+    text: "确认",
+    callback: () => {
+      submitBatchUpdate()
+      batchUpdateDialogVisible.value = false;
+    }
+  },
+  {
+    text: "取消",
+    callback: () => {
+      batchUpdateDialogVisible.value = false;
     }
   }
 ]);
@@ -91,6 +112,10 @@ const newJson = ref({
   status: 0,
   remark: "",
 });
+
+const editJson = reactive({
+  "status":0
+})
 
 const datePeriod = ref(moment().format('YYYY-MM-DD'))
 
@@ -210,6 +235,24 @@ function doQuery(){
   loadData()
 }
 
+function changeSelected(){
+  batchUpdateDialogVisible.value = true
+}
+
+function submitBatchUpdate(){
+  const selected = refTable.value.getCheckData()
+  const params = selected.map((item:any)=>{
+    return {"id":item.id,"status":editJson.status}
+  })
+  api_updateBatch(params).then(({data,code,msg}) => {
+    if (code == 200) {
+      layer.msg('您已成功修改')
+    } else {
+      layer.msg(msg+","+data, { icon: 5 })
+    }
+  })
+}
+
 function preItemChange(value:any){
   console.log(value)
   newJson.value.startTime = moment(value).add(1, 'seconds').format('YYYY-MM-DD HH:mm:ss')
@@ -221,7 +264,6 @@ function preItemChange(value:any){
 <template>
   <div class="table-container">
     <lay-table
-        id="table"
         ref="refTable"
         :page="pageJson"
         @change="change"
@@ -233,6 +275,9 @@ function preItemChange(value:any){
         <lay-form>
           <lay-form-item label="" mode="inline">
             <lay-button size="sm" type="normal" @click="showAddTimeSlot(null)">新建</lay-button>
+          </lay-form-item>
+          <lay-form-item label="" mode="inline">
+            <lay-button size="sm" @click="changeSelected">修改选中数据</lay-button>
           </lay-form-item>
           <lay-form-item label="日期" mode="inline">
             <lay-date-picker  v-model="queryParam.datePeriod" placeholder="请选择开始时间"></lay-date-picker>
@@ -318,6 +363,25 @@ function preItemChange(value:any){
         </lay-row>
       </lay-container>
     </lay-layer>
+    <lay-layer v-model="batchUpdateDialogVisible" title="批量记录" :area="['300px', '200px']" :btn="batchUpdateButtons">
+      <lay-container>
+        <lay-row>
+          <lay-col>
+            <lay-form ref="batchUpdateFormRef" :model="editJson">
+              <lay-form-item label="状态" prop="status">
+                <lay-select v-model="editJson.status">
+                  <lay-select-option :value="0" label="计划"></lay-select-option>
+                  <lay-select-option :value="1" label="进行中"></lay-select-option>
+                  <lay-select-option :value="2" label="完成"></lay-select-option>
+                  <lay-select-option :value="3" label="非预期"></lay-select-option>
+                </lay-select>
+              </lay-form-item>
+            </lay-form>
+          </lay-col>
+        </lay-row>
+      </lay-container>
+    </lay-layer>
+
   </div>
 </template>
 
